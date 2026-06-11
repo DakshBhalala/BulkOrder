@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Server, Users, Shield, Globe, Plus, Trash2, CheckCircle2, XCircle, CreditCard as CreditCardIcon } from "lucide-react";
+import { Server, Users, Shield, Globe, Plus, Trash2, CheckCircle2, XCircle, CreditCard as CreditCardIcon, LineChart as ChartIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 interface Account {
   id: number;
@@ -31,10 +32,11 @@ interface CreditCard {
 }
 
 export default function FleetPage() {
-  const [activeTab, setActiveTab] = useState<"accounts" | "proxies" | "cards">("accounts");
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [proxies, setProxies] = useState<Proxy[]>([]);
   const [cards, setCards] = useState<CreditCard[]>([]);
+  const [analytics, setAnalytics] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<"accounts" | "proxies" | "cards" | "analytics">("analytics");
   const [isLoading, setIsLoading] = useState(true);
 
   // Form states
@@ -56,17 +58,20 @@ export default function FleetPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [accRes, proxyRes, cardRes] = await Promise.all([
+      const [accRes, proxyRes, cardRes, statsRes] = await Promise.all([
         fetch("/api/fleet/accounts"),
         fetch("/api/fleet/proxies"),
-        fetch("/api/fleet/cards")
+        fetch("/api/fleet/cards"),
+        fetch("/api/fleet/analytics")
       ]);
       const accData = await accRes.json();
       const proxyData = await proxyRes.json();
       const cardData = await cardRes.json();
+      const statsData = await statsRes.json();
       setAccounts(accData);
       setProxies(proxyData);
       setCards(cardData);
+      setAnalytics(statsData);
     } catch (e) {
       toast.error("Failed to fetch fleet data");
     } finally {
@@ -226,9 +231,87 @@ export default function FleetPage() {
           <CreditCardIcon className="w-4 h-4" /> Payment Cards
           {activeTab === "cards" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-t-full" />}
         </button>
+        <button
+          onClick={() => setActiveTab("analytics")}
+          className={`pb-3 text-sm font-semibold flex items-center gap-2 transition-colors relative ${activeTab === "analytics" ? "text-indigo-600" : "text-slate-500 hover:text-slate-800"}`}
+        >
+          <ChartIcon className="w-4 h-4" /> Health Analytics
+          {activeTab === "analytics" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-t-full" />}
+        </button>
       </div>
 
       {/* Content */}
+      {activeTab === "analytics" ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Charts Col */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="minimal-card rounded-xl p-6 shadow-sm border border-slate-200/60 bg-white">
+              <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+                <Globe className="w-5 h-5 text-blue-500" />
+                Proxy IP Success Rates
+              </h2>
+              <div className="h-[300px] w-full">
+                {analytics?.proxy_metrics && analytics.proxy_metrics.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={analytics.proxy_metrics} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <XAxis dataKey="ip" tick={{fontSize: 12, fill: '#64748b'}} axisLine={false} tickLine={false} />
+                      <YAxis tick={{fontSize: 12, fill: '#64748b'}} axisLine={false} tickLine={false} />
+                      <Tooltip cursor={{fill: 'rgba(0,0,0,0.02)'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                      <Bar dataKey="success_rate" radius={[4, 4, 0, 0]}>
+                        {analytics.proxy_metrics.map((entry: any, index: number) => (
+                          <Cell key={`cell-${index}`} fill={entry.success_rate > 90 ? '#10b981' : entry.success_rate > 70 ? '#f59e0b' : '#ef4444'} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-slate-400 text-sm">No proxy data available</div>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* Side Cards Col */}
+          <div className="space-y-6">
+            {/* 2Captcha Balance */}
+            <div className="minimal-card rounded-xl p-6 shadow-sm border border-slate-200/60 bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <Shield className="w-24 h-24" />
+              </div>
+              <h3 className="text-sm font-medium text-slate-300 mb-1">2Captcha API Balance</h3>
+              <div className="text-4xl font-bold tracking-tight mb-2">
+                {analytics?.captcha_balance >= 0 ? `$${analytics.captcha_balance.toFixed(2)}` : 'Error'}
+              </div>
+              <p className="text-xs text-slate-400 flex items-center gap-1 mt-4">
+                <CheckCircle2 className="w-3 h-3 text-emerald-400" /> API Connected successfully
+              </p>
+            </div>
+
+            {/* Velocity Limits Alerts */}
+            <div className="minimal-card rounded-xl p-6 shadow-sm border border-slate-200/60 bg-white">
+              <h3 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                <Server className="w-4 h-4 text-orange-500" />
+                Amazon Velocity Warnings
+              </h3>
+              <div className="space-y-3">
+                {analytics?.velocity_alerts && analytics.velocity_alerts.length > 0 ? (
+                  analytics.velocity_alerts.map((alert: any, i: number) => (
+                    <div key={i} className="bg-orange-50/50 border border-orange-100 rounded-lg p-3 text-xs text-orange-800">
+                      <span className="font-semibold block mb-1">{alert.email}</span>
+                      {alert.message}
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 rounded-lg p-3">
+                    <CheckCircle2 className="w-4 h-4" />
+                    All accounts under limits
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Left Col: Table */}
@@ -496,15 +579,15 @@ export default function FleetPage() {
                     />
                   </div>
                 </div>
-                <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm mt-2">
-                  Add Payment Method
-                </Button>
-              </form>
+                  <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex justify-center items-center gap-2">
+                    <Plus className="w-4 h-4" /> Add Credit Card
+                  </button>
+                </form>
             )}
           </div>
         </div>
-
       </div>
+      )}
     </div>
   );
 }

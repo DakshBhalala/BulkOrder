@@ -4,7 +4,9 @@ import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { MetricsCards } from "@/components/MetricsCards";
 import { OrdersTable } from "@/components/OrdersTable";
+import { ResolveModal } from "@/components/ResolveModal";
 import { toast } from "sonner";
+import { ShieldAlert, AlertCircle } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -29,15 +31,25 @@ export default function DashboardPage() {
   const [filter, setFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [resolvingAlert, setResolvingAlert] = useState<any>(null);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const fetchData = useCallback(async () => {
     try {
-      const [m, o] = await Promise.all([
+      const [m, o, aRes] = await Promise.all([
         api.getMetrics(),
         api.getOrders(filter || undefined),
+        fetch("/api/alerts")
       ]);
       setMetrics(m);
       setOrders(o);
+      
+      if (aRes.ok) {
+        const aData = await aRes.json();
+        setAlerts(aData.filter((al: any) => al.status === "Active"));
+      }
+      setSelectedIds([]);
     } catch (err) {
       console.error("Failed to fetch dashboard data:", err);
     } finally {
@@ -152,6 +164,39 @@ export default function DashboardPage() {
       {/* Metrics */}
       <MetricsCards metrics={metrics} />
 
+      {/* Alerts Center */}
+      {alerts.length > 0 && (
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 text-red-500" /> Action Required
+            <span className="bg-red-100 text-red-700 text-[11px] font-bold px-2 py-0.5 rounded-full">{alerts.length}</span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {alerts.map(alert => (
+              <div key={alert.id} className="minimal-card rounded-xl p-4 border border-red-200/60 bg-red-50/30 flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-red-600 bg-red-100 px-2 py-1 rounded-md">
+                      {alert.type.replace('_', ' ')}
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-mono">{alert.created}</span>
+                  </div>
+                  <p className="text-sm text-slate-700 font-medium line-clamp-2">{alert.warning}</p>
+                  <p className="text-xs text-slate-500 mt-2 font-mono">Campaign: {alert.orderUnit}</p>
+                </div>
+                <Button 
+                  onClick={() => setResolvingAlert(alert)}
+                  className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white shadow-sm"
+                  size="sm"
+                >
+                  Resolve Issue
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Orders Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -183,9 +228,39 @@ export default function DashboardPage() {
             <p className="text-muted-foreground mt-3 text-sm">Loading orders...</p>
           </div>
         ) : (
-          <OrdersTable orders={orders} />
+          <div className="space-y-4">
+            {selectedIds.length > 0 && (
+              <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 flex items-center justify-between animate-in slide-in-from-top-2">
+                <span className="text-sm font-medium text-indigo-800">
+                  {selectedIds.length} order(s) selected
+                </span>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="bg-white text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-slate-200">
+                    Delete Selected
+                  </Button>
+                  <Button size="sm" onClick={handleProcessAll} className="bg-indigo-600 text-white hover:bg-indigo-700">
+                    Process Selected
+                  </Button>
+                </div>
+              </div>
+            )}
+            <OrdersTable 
+              orders={orders} 
+              selectable={true}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+            />
+          </div>
         )}
       </div>
+
+      {/* Resolution Modal */}
+      <ResolveModal 
+        alert={resolvingAlert} 
+        isOpen={!!resolvingAlert} 
+        onClose={() => setResolvingAlert(null)} 
+        onResolved={fetchData} 
+      />
     </div>
   );
 }

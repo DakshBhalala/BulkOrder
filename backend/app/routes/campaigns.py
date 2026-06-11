@@ -22,6 +22,33 @@ def cancel_campaign_route(request: dict, db: Session = Depends(get_db)):
         return {"error": "Campaign not found or not processing"}
     return {"success": True}
 
+@router.post("/campaigns/retry")
+def retry_campaign_route(request: dict, db: Session = Depends(get_db)):
+    campaign_id = request.get("campaignId")
+    resolution = request.get("resolution", {})
+    
+    # Reset campaign status to Processing
+    from app import models
+    campaign = db.query(models.Campaign).filter(models.Campaign.id == campaign_id).first()
+    if not campaign:
+        return {"error": "Campaign not found"}
+        
+    campaign.status = "Processing"
+    campaign.ordersPending = campaign.unitsTotal - (campaign.ordersSuccess or 0)
+    campaign.ordersFailed = 0
+    # Apply resolution if any (e.g. swap card)
+    if resolution.get("cardId"):
+        campaign.cardType = resolution.get("cardId")
+        
+    db.commit()
+    
+    # Re-dispatch automation
+    from app.services.engine import dispatch_campaign_automation
+    import threading
+    threading.Thread(target=dispatch_campaign_automation, args=(campaign.id,), daemon=True).start()
+    
+    return {"success": True}
+
 @router.get("/alerts", response_model=List[schemas.AlertResponse])
 def get_alerts_route(db: Session = Depends(get_db)):
     return crud.get_alerts(db)

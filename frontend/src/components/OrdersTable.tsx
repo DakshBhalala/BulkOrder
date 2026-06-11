@@ -25,7 +25,14 @@ import type { Order } from "@/lib/api";
 
 type SortConfig = { key: keyof Order; direction: "asc" | "desc" } | null;
 
-export function OrdersTable({ orders }: { orders: Order[] }) {
+interface OrdersTableProps {
+  orders: Order[];
+  selectable?: boolean;
+  selectedIds?: number[];
+  onSelectionChange?: (ids: number[]) => void;
+}
+
+export function OrdersTable({ orders, selectable, selectedIds = [], onSelectionChange }: OrdersTableProps) {
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "id", direction: "desc" });
   const [currentPage, setCurrentPage] = useState(1);
   const [screenshotOrder, setScreenshotOrder] = useState<Order | null>(null);
@@ -89,6 +96,22 @@ export function OrdersTable({ orders }: { orders: Order[] }) {
       <Table>
         <TableHeader>
           <TableRow className="border-border/40 hover:bg-transparent bg-[#F5F5F7]/60">
+            {selectable && (
+              <TableHead className="py-4 px-5 w-12">
+                <input 
+                  type="checkbox" 
+                  className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer"
+                  checked={orders.length > 0 && selectedIds.length === paginatedOrders.length}
+                  onChange={(e) => {
+                    if (e.target.checked && onSelectionChange) {
+                      onSelectionChange(paginatedOrders.map(o => o.id));
+                    } else if (onSelectionChange) {
+                      onSelectionChange([]);
+                    }
+                  }}
+                />
+              </TableHead>
+            )}
             <TableHead className="py-4 px-5 text-[#86868b] font-semibold text-[11px] uppercase tracking-wider cursor-pointer select-none" onClick={() => handleSort("order_id")}>
               Order ID {renderSortIcon("order_id")}
             </TableHead>
@@ -119,9 +142,33 @@ export function OrdersTable({ orders }: { orders: Order[] }) {
           {paginatedOrders.map((order, i) => (
             <TableRow
               key={order.id}
-              className="border-border/30 hover:bg-black/[0.02] transition-colors cursor-pointer group"
+              className={`border-border/30 hover:bg-black/[0.02] transition-colors cursor-pointer group ${selectedIds.includes(order.id) ? "bg-indigo-50/50" : ""}`}
               style={{ animationDelay: `${i * 30}ms` }}
+              onClick={() => {
+                if (selectable && onSelectionChange) {
+                  if (selectedIds.includes(order.id)) {
+                    onSelectionChange(selectedIds.filter(id => id !== order.id));
+                  } else {
+                    onSelectionChange([...selectedIds, order.id]);
+                  }
+                }
+              }}
             >
+              {selectable && (
+                <TableCell className="px-5 py-4 w-12" onClick={(e) => e.stopPropagation()}>
+                  <input 
+                    type="checkbox" 
+                    className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer"
+                    checked={selectedIds.includes(order.id)}
+                    onChange={(e) => {
+                      if (onSelectionChange) {
+                        if (e.target.checked) onSelectionChange([...selectedIds, order.id]);
+                        else onSelectionChange(selectedIds.filter(id => id !== order.id));
+                      }
+                    }}
+                  />
+                </TableCell>
+              )}
               <TableCell className="px-5 py-4">
                 <Link
                   href={`/orders/${order.id}`}

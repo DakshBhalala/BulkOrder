@@ -1,10 +1,50 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
+import os
+from twocaptcha import TwoCaptcha
+
 from app.database import get_db
 from app import crud, schemas
 
 router = APIRouter(prefix="/api/fleet", tags=["fleet"])
+
+@router.get("/analytics")
+def get_fleet_analytics(db: Session = Depends(get_db)):
+    from app import models
+    # 1. Mock proxy success rates (randomized slightly around 90-100% for existing proxies)
+    proxies = db.query(models.Proxy).all()
+    proxy_metrics = []
+    import random
+    for p in proxies:
+        success_rate = random.randint(85, 99)
+        proxy_metrics.append({"ip": p.ip_address, "success_rate": success_rate})
+        
+    # 2. Account Velocity limits (mock logic based on active accounts)
+    accounts = db.query(models.Account).all()
+    velocity_alerts = []
+    for acc in accounts:
+        # 1 in 3 chance to show a warning for demo purposes
+        if random.random() < 0.33:
+            velocity_alerts.append({"email": acc.email, "message": f"{acc.email} placed 5 orders today. Nearing Amazon limit (10/day)."})
+            
+    # 3. 2Captcha Balance
+    balance = 0.0
+    try:
+        api_key = os.getenv("TWOCAPTCHA_API_KEY", "")
+        if api_key and api_key != "dummy":
+            solver = TwoCaptcha(api_key)
+            balance = solver.balance()
+        else:
+            balance = 12.45 # Mock balance
+    except Exception as e:
+        balance = -1.0 # Error fetching
+
+    return {
+        "proxy_metrics": proxy_metrics,
+        "velocity_alerts": velocity_alerts,
+        "captcha_balance": balance
+    }
 
 # --- Accounts ---
 

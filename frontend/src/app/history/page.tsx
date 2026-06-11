@@ -37,6 +37,7 @@ export default function OrderUnitsHistoryPage() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   // Filtering states
   const [filterPlatform, setFilterPlatform] = useState("All Platforms");
@@ -100,16 +101,16 @@ export default function OrderUnitsHistoryPage() {
     toast.success("CSV Downloaded Successfully!");
   };
 
-  const handleCompileInvoices = async () => {
-    if (filteredHistory.length === 0) return toast.error("No orders to compile");
-    toast.loading(`Compiling PDF bundle for ${filteredHistory.length} orders...`, { id: 'compile' });
+  const handleCompileInvoices = async (idsToCompile?: string[]) => {
+    const targets = idsToCompile || filteredHistory.map(h => h.orderId);
+    if (targets.length === 0) return toast.error("No orders to compile");
+    toast.loading(`Compiling PDF bundle for ${targets.length} orders...`, { id: 'compile' });
     
     try {
-      const orderIds = filteredHistory.map(h => h.orderId);
       const res = await fetch("/api/history/invoice-bundle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ order_ids: orderIds })
+        body: JSON.stringify({ order_ids: targets })
       });
       
       if (!res.ok) throw new Error("Failed");
@@ -186,8 +187,16 @@ export default function OrderUnitsHistoryPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Button onClick={handleCompileInvoices} variant="outline" size="sm" className="h-8 rounded-lg bg-white border-slate-200 shadow-sm text-slate-700 text-[10px] font-bold uppercase tracking-wider">
-                <FileText className="w-3 h-3 mr-1.5 text-indigo-500" /> Compile ZIP Invoices
+              {selectedIds.length > 0 && (
+                <div className="flex items-center gap-2 mr-2 border-r border-slate-200 pr-3">
+                  <span className="text-[11px] font-bold text-indigo-700">{selectedIds.length} selected</span>
+                  <Button onClick={() => handleCompileInvoices(selectedIds)} variant="outline" size="sm" className="h-8 rounded-lg bg-indigo-50 border-indigo-200 shadow-sm text-indigo-700 text-[10px] font-bold uppercase tracking-wider hover:bg-indigo-100">
+                    <FileText className="w-3 h-3 mr-1.5" /> Compile Selected
+                  </Button>
+                </div>
+              )}
+              <Button onClick={() => handleCompileInvoices()} variant="outline" size="sm" className="h-8 rounded-lg bg-white border-slate-200 shadow-sm text-slate-700 text-[10px] font-bold uppercase tracking-wider">
+                <FileText className="w-3 h-3 mr-1.5 text-indigo-500" /> Compile All
               </Button>
               <Button onClick={handleExportCSV} variant="outline" size="sm" className="h-8 rounded-lg bg-white border-slate-200 shadow-sm text-slate-700 text-[10px] font-bold uppercase tracking-wider">
                 <Download className="w-3 h-3 mr-1.5 text-emerald-500" /> Export CSV
@@ -238,6 +247,17 @@ export default function OrderUnitsHistoryPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#F5F5F7]/60 border-b border-slate-200/60 text-[11px] font-semibold text-slate-500 uppercase tracking-widest whitespace-nowrap">
+                <th className="px-5 py-4 w-12">
+                  <input 
+                    type="checkbox" 
+                    className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer"
+                    checked={currentHistory.length > 0 && selectedIds.length === currentHistory.length}
+                    onChange={(e) => {
+                      if (e.target.checked) setSelectedIds(currentHistory.map(h => h.orderId));
+                      else setSelectedIds([]);
+                    }}
+                  />
+                </th>
                 <th className="px-5 py-4">Status & Date</th>
                 <th className="px-5 py-4">Account & Order ID</th>
                 <th className="px-5 py-4 min-w-[220px]">Item Details</th>
@@ -255,7 +275,28 @@ export default function OrderUnitsHistoryPage() {
                   </td>
                 </tr>
               ) : currentHistory.map((item) => (
-                <tr key={item.id} className="bg-white hover:bg-slate-50/50 transition-colors group">
+                <tr 
+                  key={item.id} 
+                  className={`hover:bg-slate-50/50 transition-colors group cursor-pointer ${selectedIds.includes(item.orderId) ? "bg-indigo-50/50" : "bg-white"}`}
+                  onClick={() => {
+                    if (selectedIds.includes(item.orderId)) {
+                      setSelectedIds(selectedIds.filter(id => id !== item.orderId));
+                    } else {
+                      setSelectedIds([...selectedIds, item.orderId]);
+                    }
+                  }}
+                >
+                  <td className="px-5 py-4" onClick={(e) => e.stopPropagation()}>
+                    <input 
+                      type="checkbox" 
+                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer"
+                      checked={selectedIds.includes(item.orderId)}
+                      onChange={(e) => {
+                        if (e.target.checked) setSelectedIds([...selectedIds, item.orderId]);
+                        else setSelectedIds(selectedIds.filter(id => id !== item.orderId));
+                      }}
+                    />
+                  </td>
                   <td className="px-5 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2 mb-1">
                       {getStatusIcon(item.status)}

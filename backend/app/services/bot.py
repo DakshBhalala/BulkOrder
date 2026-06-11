@@ -136,9 +136,9 @@ async def run_bot_campaign(campaign_id: int):
                         "user_agent": selected_ua,
                         "proxy": proxy_config
                     }
-                    if os.path.exists(session_file):
-                        context_options["storage_state"] = session_file
-                        logger.info(f"Loaded Cached Session for {current_email}")
+                    # We intentionally DO NOT use storage_state here to enforce a clean, 
+                    # fresh browser context every time (avoids soft-blocks from mismatched proxy/IP cookies).
+                    logger.info("Enforcing a completely fresh browser context (No cached session loaded)")
                         
                     context = await browser.new_context(**context_options)
                     page = await context.new_page()
@@ -441,26 +441,17 @@ async def run_bot_campaign(campaign_id: int):
 
                         # Now look for "Add a new address" link, regardless of whether Change was clicked
                         # (If the account is fresh, there won't be a Change button, only Add Address)
-                        clicked_add_new = await page.evaluate('''() => {
-                            const allEls = Array.from(document.querySelectorAll('a, span, input, button, div'));
-                            for (const el of allEls) {
-                                const text = (el.textContent || el.value || '').trim();
-                                if (text === 'Add a new address' || text === 'add a new address' || text === 'Add a new delivery address' || text === 'Add a delivery address') {
-                                    const rect = el.getBoundingClientRect();
-                                    if (rect.width > 0 && rect.height > 0) {
-                                        el.click();
-                                        return true;
-                                    }
-                                }
-                            }
-                            // Also try by ID or typical classes
-                            const addBtn = document.querySelector('#add-new-address-popover-link, [id*="add-new-address"], .add-new-address-button');
-                            if (addBtn) { addBtn.click(); return true; }
-                            return false;
-                        }''')
-                        if clicked_add_new:
-                            logger.info("Clicked 'Add a new address'.")
-                            await page.wait_for_timeout(3000)
+                        try:
+                            logger.info("Looking for 'Add a new address' link via Playwright...")
+                            add_new_btn = page.locator('a:has-text("Add a new delivery address"), a:has-text("Add a new address"), #add-new-address-popover-link, .add-new-address-button')
+                            if await add_new_btn.count() > 0:
+                                await add_new_btn.first.click(timeout=3000)
+                                logger.info("Clicked 'Add a new address' via Playwright.")
+                                await page.wait_for_timeout(3000)
+                            else:
+                                logger.info("Could not find 'Add a new address' button. Continuing...")
+                        except Exception as e:
+                            logger.warning(f"Failed to click 'Add a new address': {e}")
 
                         # Step 1: Try to fill a new address form if it's visible
                         new_address_form = page.locator('input[name="address-ui-widgets-enterAddressFullName"], input[id*="FullName"]')
