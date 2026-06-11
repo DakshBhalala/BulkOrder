@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechDirect — Demo Supplier Store</title>
+    <link rel="stylesheet" href="/supplier-site/style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">🛒 TechDirect</div>
+        <nav>
+            <a href="/supplier-site/" class="active" data-page="store">Store</a>
+            <a href="#" data-page="cart">Cart (<span id="cart-count">0</span>)</a>
+        </nav>
+    </header>
+
+    <!-- Store Page -->
+    <main id="store-page">
+        <section class="search-section">
+            <h1>Product Catalog</h1>
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search products..." />
+                <button id="search-btn">Search</button>
+            </div>
+        </section>
+
+        <section class="products-grid" id="products-grid">
+            <!-- Products populated by JS -->
+        </section>
+    </main>
+
+    <!-- Cart Page -->
+    <main id="cart-page" style="display:none;">
+        <h1>Shopping Cart</h1>
+        <div id="cart-items"></div>
+        <div class="cart-actions" id="cart-actions" style="display:none;">
+            <div class="cart-total">
+                Total: $<span id="cart-total">0.00</span>
+            </div>
+            <button id="checkout-btn" class="btn-primary">Proceed to Checkout</button>
+        </div>
+        <p id="cart-empty" style="display:none;">Your cart is empty.</p>
+    </main>
+
+    <!-- Checkout Page -->
+    <main id="checkout-page" style="display:none;">
+        <h1>Checkout</h1>
+        <form id="checkout-form">
+            <div class="form-group">
+                <label for="buyer-name">Buyer Name</label>
+                <input type="text" id="buyer-name" required value="BulkOrder Automation" />
+            </div>
+            <div class="form-group">
+                <label for="buyer-email">Email</label>
+                <input type="email" id="buyer-email" required value="orders@bulkorder.demo" />
+            </div>
+            <div class="form-group">
+                <label for="order-qty">Quantity</label>
+                <input type="number" id="order-qty" min="1" value="1" required />
+            </div>
+            <button type="submit" class="btn-primary" id="place-order-btn">Place Order</button>
+        </form>
+    </main>
+
+    <!-- Confirmation Page -->
+    <main id="confirmation-page" style="display:none;">
+        <div class="confirmation-box">
+            <div class="check-icon">✓</div>
+            <h1>Order Confirmed!</h1>
+            <p>Order Reference: <strong id="conf-order-id"></strong></p>
+            <p>Tracking Number: <strong id="conf-tracking"></strong></p>
+            <p>Estimated Delivery: <strong id="conf-delivery"></strong></p>
+            <button class="btn-primary" onclick="location.reload()">Back to Store</button>
+        </div>
+    </main>
+
+    <script src="/supplier-site/script.js"></script>
+</body>
+</html>
