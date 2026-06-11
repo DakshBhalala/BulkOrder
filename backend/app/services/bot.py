@@ -433,33 +433,34 @@ async def run_bot_campaign(campaign_id: int):
                             logger.info(f"Clicked 'Change' via {clicked_change.get('method')}")
                             await page.wait_for_timeout(4000)
                             await page.screenshot(path=os.path.join(os.getcwd(), "screenshots", f"{campaign_id}_05_after_change_click.png"))
-                            
-                            # Now look for "Add a new address" link
-                            clicked_add_new = await page.evaluate('''() => {
-                                const allEls = Array.from(document.querySelectorAll('a, span, input, button'));
-                                for (const el of allEls) {
-                                    const text = (el.textContent || el.value || '').trim();
-                                    if (text.includes('Add a new address') || text.includes('add a new address')) {
-                                        const rect = el.getBoundingClientRect();
-                                        if (rect.width > 0 && rect.height > 0) {
-                                            el.click();
-                                            return true;
-                                        }
-                                    }
-                                }
-                                // Also try by ID
-                                const addBtn = document.querySelector('#add-new-address-popover-link, [id*="add-new-address"]');
-                                if (addBtn) { addBtn.click(); return true; }
-                                return false;
-                            }''')
-                            if clicked_add_new:
-                                logger.info("Clicked 'Add a new address'.")
-                                await page.wait_for_timeout(3000)
                         else:
                             logger.warning("Could not find 'Change' button. Dumping page HTML for debug...")
                             html_content = await page.content()
                             with open(os.path.join(os.getcwd(), "screenshots", f"{campaign_id}_checkout_dump.html"), "w", encoding="utf-8") as f:
                                 f.write(html_content)
+
+                        # Now look for "Add a new address" link, regardless of whether Change was clicked
+                        # (If the account is fresh, there won't be a Change button, only Add Address)
+                        clicked_add_new = await page.evaluate('''() => {
+                            const allEls = Array.from(document.querySelectorAll('a, span, input, button, div'));
+                            for (const el of allEls) {
+                                const text = (el.textContent || el.value || '').trim();
+                                if (text === 'Add a new address' || text === 'add a new address' || text === 'Add a new delivery address' || text === 'Add a delivery address') {
+                                    const rect = el.getBoundingClientRect();
+                                    if (rect.width > 0 && rect.height > 0) {
+                                        el.click();
+                                        return true;
+                                    }
+                                }
+                            }
+                            // Also try by ID or typical classes
+                            const addBtn = document.querySelector('#add-new-address-popover-link, [id*="add-new-address"], .add-new-address-button');
+                            if (addBtn) { addBtn.click(); return true; }
+                            return false;
+                        }''')
+                        if clicked_add_new:
+                            logger.info("Clicked 'Add a new address'.")
+                            await page.wait_for_timeout(3000)
 
                         # Step 1: Try to fill a new address form if it's visible
                         new_address_form = page.locator('input[name="address-ui-widgets-enterAddressFullName"], input[id*="FullName"]')
