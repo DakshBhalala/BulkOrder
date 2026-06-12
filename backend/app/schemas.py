@@ -296,3 +296,52 @@ class CreditCardResponse(CreditCardBase):
 
     class Config:
         from_attributes = True
+
+
+# ─── Virtual Card & Payment Schemas ──────────────────────────────
+
+class VirtualCardResponse(BaseModel):
+    id: int
+    provider: str
+    brand: str
+    last4: str
+    exp_month: str
+    exp_year: str
+    spend_limit: float
+    currency: str
+    single_use: bool
+    status: str
+
+    class Config:
+        from_attributes = True
+
+
+class PaymentCreate(BaseModel):
+    amount: float = Field(gt=0)
+    currency: str = "INR"
+    campaign_id: Optional[str] = None
+    order_ref: Optional[str] = None
+    # If true, authorize (and capture) immediately after issuing the card.
+    auto_capture: bool = True
+
+
+class PaymentResponse(BaseModel):
+    id: str
+    campaign_id: Optional[str] = None
+    order_ref: Optional[str] = None
+    amount: float
+    currency: str
+    status: str
+    provider: str
+    gateway_ref: Optional[str] = None
+    failure_reason: Optional[str] = None
+    virtual_card: Optional[VirtualCardResponse] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class OtpSubmit(BaseModel):
+    otp: str

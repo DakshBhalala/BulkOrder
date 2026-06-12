@@ -4,7 +4,7 @@ Database CRUD operations for orders, suppliers, products, and order history.
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from typing import List, Optional
-from app import models
+from app import models, schemas
 from app.models import OrderStatus
 
 

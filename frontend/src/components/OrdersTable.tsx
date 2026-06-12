@@ -20,7 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { Order } from "@/lib/api";
+import { api, type Order, type Payment } from "@/lib/api";
 
 type SortConfig = { key: keyof Order; direction: "asc" | "desc" } | null;
 
@@ -35,7 +35,37 @@ export function OrdersTable({ orders, selectable, selectedIds = [], onSelectionC
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "id", direction: "desc" });
   const [currentPage, setCurrentPage] = useState(1);
   const [screenshotOrder, setScreenshotOrder] = useState<Order | null>(null);
+  const [payingId, setPayingId] = useState<number | null>(null);
+  const [payment, setPayment] = useState<Payment | null>(null);
   const itemsPerPage = 15;
+
+  const handlePay = async (order: Order, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPayingId(order.id);
+    const amount = (order.quantity || 1) * 799; // demo unit price
+    try {
+      const result = await api.createPayment({
+        amount,
+        order_ref: order.order_id,
+        auto_capture: true,
+      });
+      setPayment(result);
+      setScreenshotOrder(order);
+      if (result.status === "captured") {
+        toast.success(`Paid ₹${result.amount.toLocaleString()} with virtual card ••••${result.virtual_card?.last4}`);
+      } else if (result.status === "otp_required") {
+        toast.warning("OTP required to complete this payment.");
+      } else if (result.status === "declined") {
+        toast.error(`Payment declined: ${result.failure_reason || "issuer declined"}`);
+      } else {
+        toast.info(`Payment ${result.status}`);
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Payment failed");
+    } finally {
+      setPayingId(null);
+    }
+  };
 
   const handleSort = (key: keyof Order) => {
     setSortConfig((current) => {
@@ -200,11 +230,9 @@ export function OrdersTable({ orders, selectable, selectedIds = [], onSelectionC
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 hover:bg-emerald-50 hover:text-emerald-600 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toast.success(`Payment initiated for Order #${order.order_id}`);
-                    }}
-                    title="Pay Now"
+                    disabled={payingId === order.id}
+                    onClick={(e) => handlePay(order, e)}
+                    title="Pay with virtual card"
                   >
                     <CreditCard className="w-4 h-4" />
                   </Button>
@@ -256,8 +284,8 @@ export function OrdersTable({ orders, selectable, selectedIds = [], onSelectionC
         </div>
       )}
 
-      {/* Screenshot Modal */}
-      <Dialog open={!!screenshotOrder} onOpenChange={() => setScreenshotOrder(null)}>
+      {/* Screenshot / Payment Receipt Modal */}
+      <Dialog open={!!screenshotOrder} onOpenChange={() => { setScreenshotOrder(null); setPayment(null); }}>
         <DialogContent className="sm:max-w-[600px] rounded-lg border border-gray-200 shadow-xl p-0 overflow-hidden">
           <DialogHeader className="p-4 bg-gray-50 border-b border-gray-200">
             <DialogTitle className="text-sm font-medium tracking-tight text-gray-900 flex items-center gap-2">
@@ -267,17 +295,35 @@ export function OrdersTable({ orders, selectable, selectedIds = [], onSelectionC
           </DialogHeader>
           <div className="bg-gray-50 p-6 flex flex-col items-center justify-center min-h-[300px]">
             <div className="bg-white p-8 rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-gray-200 text-center space-y-4 max-w-sm w-full">
-              <div className="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2">
-                <Check className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900">Payment Successful</h3>
-              <p className="text-sm font-medium text-gray-500">₹{((screenshotOrder?.quantity || 1) * 79900).toLocaleString()}</p>
+              {payment?.status === "captured" || payment === null ? (
+                <div className="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Check className="w-8 h-8" />
+                </div>
+              ) : (
+                <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <CreditCard className="w-8 h-8" />
+                </div>
+              )}
+              <h3 className="text-xl font-semibold text-gray-900">
+                {payment ? (payment.status === "captured" ? "Payment Successful" : `Payment ${payment.status.replace("_", " ")}`) : "Payment Successful"}
+              </h3>
+              <p className="text-sm font-medium text-gray-500">
+                ₹{(payment ? payment.amount : (screenshotOrder?.quantity || 1) * 799).toLocaleString()}
+              </p>
               <div className="pt-4 border-t border-gray-100 text-xs text-gray-400 font-mono text-left space-y-2">
-                <div className="flex justify-between"><span className="uppercase font-medium tracking-wider">Transaction ID</span><span className="text-gray-700">TXN{screenshotOrder?.order_id.replace(/\D/g, '')}</span></div>
-                <div className="flex justify-between"><span className="uppercase font-medium tracking-wider">Paid With</span><span className="text-gray-700">ICICI Bank •••• 1234</span></div>
+                <div className="flex justify-between"><span className="uppercase font-medium tracking-wider">Payment ID</span><span className="text-gray-700">{payment?.id || `TXN${screenshotOrder?.order_id.replace(/\D/g, '')}`}</span></div>
+                <div className="flex justify-between"><span className="uppercase font-medium tracking-wider">Paid With</span><span className="text-gray-700">{payment?.virtual_card ? `Virtual ${payment.virtual_card.brand} •••• ${payment.virtual_card.last4}` : "ICICI Bank •••• 1234"}</span></div>
+                {payment?.virtual_card && (
+                  <div className="flex justify-between"><span className="uppercase font-medium tracking-wider">Card Type</span><span className="text-gray-700">{payment.virtual_card.single_use ? "Single-use" : "Reusable"}</span></div>
+                )}
+                {payment?.failure_reason && (
+                  <div className="flex justify-between"><span className="uppercase font-medium tracking-wider">Reason</span><span className="text-red-500">{payment.failure_reason}</span></div>
+                )}
               </div>
             </div>
-            <p className="text-[10px] text-gray-400 mt-6 uppercase font-medium tracking-widest text-center">Mock Screenshot Render</p>
+            <p className="text-[10px] text-gray-400 mt-6 uppercase font-medium tracking-widest text-center">
+              {payment?.provider === "mock" ? "Sandbox virtual card · no real charge" : "Mock Screenshot Render"}
+            </p>
           </div>
         </DialogContent>
       </Dialog>

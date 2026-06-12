@@ -67,7 +67,7 @@ os.makedirs(screenshots_path, exist_ok=True)
 app.mount("/screenshots", StaticFiles(directory=screenshots_path), name="screenshots")
 
 # Register routers
-from app.routes import orders, dashboard, matching, suppliers, automation, scrape, campaigns, fleet
+from app.routes import orders, dashboard, matching, suppliers, automation, scrape, campaigns, fleet, payments
 
 app.include_router(orders.router)
 app.include_router(dashboard.router)
@@ -77,6 +77,7 @@ app.include_router(automation.router)
 app.include_router(scrape.router)
 app.include_router(campaigns.router)
 app.include_router(fleet.router)
+app.include_router(payments.router)
 
 
 @app.get("/")

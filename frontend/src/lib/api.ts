@@ -163,4 +163,51 @@ export const api = {
 
   // Suppliers
   getSuppliers: () => apiFetch<Supplier[]>("/suppliers"),
+
+  // Payments (virtual-card funded)
+  createPayment: (body: {
+    amount: number;
+    currency?: string;
+    campaign_id?: string;
+    order_ref?: string;
+    auto_capture?: boolean;
+  }) =>
+    apiFetch<Payment>("/payments", {
+      method: "POST",
+      body: JSON.stringify({ currency: "INR", auto_capture: true, ...body }),
+    }),
+  submitPaymentOtp: (paymentId: string, otp: string) =>
+    apiFetch<Payment>(`/payments/${paymentId}/otp`, {
+      method: "POST",
+      body: JSON.stringify({ otp }),
+    }),
+  getPayments: () => apiFetch<Payment[]>("/payments"),
 };
+
+export interface VirtualCard {
+  id: number;
+  provider: string;
+  brand: string;
+  last4: string;
+  exp_month: string;
+  exp_year: string;
+  spend_limit: number;
+  currency: string;
+  single_use: boolean;
+  status: string;
+}
+
+export interface Payment {
+  id: string;
+  campaign_id?: string | null;
+  order_ref?: string | null;
+  amount: number;
+  currency: string;
+  status: string;
+  provider: string;
+  gateway_ref?: string | null;
+  failure_reason?: string | null;
+  virtual_card?: VirtualCard | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}

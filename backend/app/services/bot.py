@@ -614,14 +614,52 @@ async def run_bot_campaign(campaign_id: int):
                             await page.wait_for_timeout(5000)
                             await page.screenshot(path=os.path.join(os.getcwd(), "screenshots", f"{campaign_id}_07_add_card_form.png"))
                             
-                            # Fetch an active credit card from DB
-                            db_cards = db.query(CreditCard).filter(CreditCard.is_active == True).all()
-                            db_card = random.choice(db_cards) if db_cards else None
-                            
-                            card_number = db_card.card_number if db_card else "4111111111111111"
-                            card_name = db_card.card_name if db_card else "JOHN DOE"
-                            exp_month = int(db_card.expiry_month) - 1 if db_card else 5 # 0-indexed month for the select dropdown (0 = Jan, 5 = Jun)
-                            exp_year = db_card.expiry_year if db_card else "2028"
+                            # ── Select a payment card ──────────────────────────
+                            # If the campaign requests a VIRTUAL card (or runs in
+                            # sandbox), mint a single-use virtual card sized to the
+                            # order and use it. Otherwise fall back to a stored card.
+                            card_number = "4111111111111111"
+                            card_name = (campaign.addressLabel or "JOHN DOE")
+                            exp_month = 5          # 0-indexed (5 = Jun) for the dropdown
+                            exp_year = "2028"
+                            card_cvv = "123"
+
+                            use_virtual = bool(campaign.isMock) or (
+                                campaign.cardType or ""
+                            ).upper().endswith("VIRTUAL")
+
+                            if use_virtual:
+                                try:
+                                    from app.services.payments import PaymentService
+                                    limit = float(os.getenv("VIRTUAL_CARD_DEFAULT_LIMIT", "100000"))
+                                    _payment, issued = PaymentService().create_payment(
+                                        db,
+                                        amount=limit,
+                                        currency="INR",
+                                        campaign_id=campaign.id,
+                                    )
+                                    card_number = issued.number
+                                    card_cvv = issued.cvv
+                                    exp_month = int(issued.exp_month) - 1
+                                    exp_year = issued.exp_year
+                                    logger.info(
+                                        "Using single-use virtual card ****%s (payment %s)",
+                                        issued.last4, _payment.id,
+                                    )
+                                except Exception as e:
+                                    logger.warning("Virtual card issuance failed, falling back: %s", e)
+                                    use_virtual = False
+
+                            if not use_virtual:
+                                # Fall back to a stored card from the fleet.
+                                db_cards = db.query(CreditCard).filter(CreditCard.is_active == True).all()
+                                db_card = random.choice(db_cards) if db_cards else None
+                                if db_card:
+                                    card_number = db_card.card_number
+                                    card_name = db_card.card_name
+                                    exp_month = int(db_card.expiry_month) - 1
+                                    exp_year = db_card.expiry_year
+                                    card_cvv = db_card.cvv or card_cvv
                             
                             logger.info("Attempting to fill card details inside iframe...")
                             card_filled = False

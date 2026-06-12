@@ -211,3 +211,68 @@ class CreditCard(Base):
     cvv = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
 
+
+# --- Virtual Card & Payment Models ---
+
+class VirtualCardStatus(str, enum.Enum):
+    ACTIVE = "active"
+    USED = "used"
+    CANCELED = "canceled"
+    EXPIRED = "expired"
+
+
+class PaymentStatus(str, enum.Enum):
+    PENDING = "pending"
+    AUTHORIZED = "authorized"
+    OTP_REQUIRED = "otp_required"
+    CAPTURED = "captured"
+    DECLINED = "declined"
+    FAILED = "failed"
+    REFUNDED = "refunded"
+
+
+class VirtualCard(Base):
+    """
+    A single-use virtual card issued for one order/campaign.
+
+    Security: we NEVER persist the full PAN or CVV. Only the masked last4,
+    brand, expiry, the provider's card id/token, and the spend limit are
+    stored. The sensitive number is returned once at issuance time for the
+    checkout step to consume in-memory.
+    """
+    __tablename__ = "virtual_cards"
+
+    id = Column(Integer, primary_key=True, index=True)
+    provider = Column(String(50), default="mock")          # mock | stripe_issuing | ...
+    provider_card_id = Column(String(255), index=True)     # token/id at the issuer
+    brand = Column(String(50), default="visa")
+    last4 = Column(String(4), default="0000")
+    exp_month = Column(String(2), default="12")
+    exp_year = Column(String(4), default="2030")
+    spend_limit = Column(Float, default=0.0)               # cap == order total
+    currency = Column(String(8), default="INR")
+    single_use = Column(Boolean, default=True)
+    status = Column(String(20), default=VirtualCardStatus.ACTIVE.value)
+    campaign_id = Column(String(50), ForeignKey("campaigns.id"), nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+
+class Payment(Base):
+    """A payment attempt tied to a campaign, funded by a virtual card."""
+    __tablename__ = "payments"
+
+    id = Column(String(50), primary_key=True, index=True)
+    campaign_id = Column(String(50), ForeignKey("campaigns.id"), nullable=True, index=True)
+    order_ref = Column(String(100), nullable=True)         # external order id (history unit)
+    virtual_card_id = Column(Integer, ForeignKey("virtual_cards.id"), nullable=True)
+    amount = Column(Float, default=0.0)
+    currency = Column(String(8), default="INR")
+    status = Column(String(20), default=PaymentStatus.PENDING.value)
+    provider = Column(String(50), default="mock")
+    gateway_ref = Column(String(255), nullable=True)       # auth/capture reference
+    failure_reason = Column(String(255), nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+    updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow)
+
+    virtual_card = relationship("VirtualCard")
+
