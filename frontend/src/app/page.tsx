@@ -25,14 +25,23 @@ const statusFilters = [
   { label: "Failed", value: "failed" },
 ];
 
+interface AlertItem {
+  id: number;
+  type: string;
+  warning: string;
+  status: string;
+  orderUnit?: string;
+  created: string;
+}
+
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [filter, setFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [alerts, setAlerts] = useState<any[]>([]);
-  const [resolvingAlert, setResolvingAlert] = useState<any>(null);
+  const [alerts, setAlerts] = useState<AlertItem[]>([]);
+  const [resolvingAlert, setResolvingAlert] = useState<AlertItem | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const fetchData = useCallback(async () => {
@@ -47,7 +56,7 @@ export default function DashboardPage() {
       
       if (aRes.ok) {
         const aData = await aRes.json();
-        setAlerts(aData.filter((al: any) => al.status === "Active"));
+        setAlerts(aData.filter((al: AlertItem) => al.status === "Active"));
       }
       setSelectedIds([]);
     } catch (err) {

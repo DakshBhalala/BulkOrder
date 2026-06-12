@@ -6,8 +6,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { ShieldAlert, CreditCard, KeyRound } from "lucide-react";
 
+interface AlertItem {
+  id: number;
+  type: string;
+  warning: string;
+  status: string;
+  orderUnit?: string;
+  email?: string;
+  created: string;
+}
+
 interface ResolveModalProps {
-  alert: any | null;
+  alert: AlertItem | null;
   isOpen: boolean;
   onClose: () => void;
   onResolved: () => void;
@@ -45,8 +55,8 @@ export function ResolveModal({ alert, isOpen, onClose, onResolved }: ResolveModa
       toast.success("Resolution applied. Campaign resumed!");
       onResolved();
       onClose();
-    } catch (e: any) {
-      toast.error(e.message || "Failed to resolve alert");
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Failed to resolve alert");
     } finally {
       setIsSubmitting(false);
     }

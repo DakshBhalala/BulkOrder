@@ -31,11 +31,27 @@ interface CreditCard {
   is_active: boolean;
 }
 
+interface ProxyMetric {
+  ip: string;
+  success_rate: number;
+}
+
+interface VelocityAlert {
+  email: string;
+  orders_today: number;
+}
+
+interface AnalyticsData {
+  proxy_metrics: ProxyMetric[];
+  velocity_alerts: VelocityAlert[];
+  captcha_balance: number;
+}
+
 export default function FleetPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [proxies, setProxies] = useState<Proxy[]>([]);
   const [cards, setCards] = useState<CreditCard[]>([]);
-  const [analytics, setAnalytics] = useState<any>(null);
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [activeTab, setActiveTab] = useState<"accounts" | "proxies" | "cards" | "analytics">("analytics");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -258,7 +274,7 @@ export default function FleetPage() {
                       <YAxis tick={{fontSize: 12, fill: '#64748b'}} axisLine={false} tickLine={false} />
                       <Tooltip cursor={{fill: 'rgba(0,0,0,0.02)'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
                       <Bar dataKey="success_rate" radius={[4, 4, 0, 0]}>
-                        {analytics.proxy_metrics.map((entry: any, index: number) => (
+                        {analytics.proxy_metrics.map((entry: ProxyMetric, index: number) => (
                           <Cell key={`cell-${index}`} fill={entry.success_rate > 90 ? '#10b981' : entry.success_rate > 70 ? '#f59e0b' : '#ef4444'} />
                         ))}
                       </Bar>
@@ -295,7 +311,7 @@ export default function FleetPage() {
               </h3>
               <div className="space-y-3">
                 {analytics?.velocity_alerts && analytics.velocity_alerts.length > 0 ? (
-                  analytics.velocity_alerts.map((alert: any, i: number) => (
+                  analytics.velocity_alerts.map((alert: VelocityAlert, i: number) => (
                     <div key={i} className="bg-orange-50/50 border border-orange-100 rounded-lg p-3 text-xs text-orange-800">
                       <span className="font-semibold block mb-1">{alert.email}</span>
                       {alert.message}
