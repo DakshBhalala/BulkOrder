@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { DashboardMetrics } from "@/lib/api";
 
@@ -9,7 +8,6 @@ interface MetricCard {
   label: string;
   value: number;
   icon: React.ReactNode;
-  glowClass: string;
   colorClass: string;
   bgClass: string;
 }
@@ -38,11 +36,10 @@ export function MetricsCards({ metrics }: { metrics: DashboardMetrics | null }) 
     {
       label: "Total Orders",
       value: metrics?.total_orders || 0,
-      glowClass: "",
-      colorClass: "text-foreground",
-      bgClass: "bg-secondary",
+      colorClass: "text-gray-900",
+      bgClass: "bg-gray-50 text-gray-500",
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
       ),
@@ -50,11 +47,10 @@ export function MetricsCards({ metrics }: { metrics: DashboardMetrics | null }) 
     {
       label: "Matched",
       value: metrics?.matched_orders || 0,
-      glowClass: "",
-      colorClass: "text-foreground",
-      bgClass: "bg-secondary",
+      colorClass: "text-gray-900",
+      bgClass: "bg-violet-50 text-violet-600",
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
@@ -62,11 +58,10 @@ export function MetricsCards({ metrics }: { metrics: DashboardMetrics | null }) 
     {
       label: "Completed",
       value: metrics?.completed_orders || 0,
-      glowClass: "",
-      colorClass: "text-foreground",
-      bgClass: "bg-secondary",
+      colorClass: "text-gray-900",
+      bgClass: "bg-emerald-50 text-emerald-600",
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M5 13l4 4L19 7" />
         </svg>
       ),
@@ -74,11 +69,10 @@ export function MetricsCards({ metrics }: { metrics: DashboardMetrics | null }) 
     {
       label: "Failed",
       value: metrics?.failed_orders || 0,
-      glowClass: "",
-      colorClass: "text-destructive",
-      bgClass: "bg-destructive/10",
+      colorClass: "text-gray-900",
+      bgClass: "bg-red-50 text-red-500",
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
         </svg>
       ),
@@ -87,42 +81,38 @@ export function MetricsCards({ metrics }: { metrics: DashboardMetrics | null }) 
 
   if (!metrics) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <Card key={i} className="border-black/5 mac-shadow">
-            <CardContent className="p-5">
-              <div className="flex justify-between items-center mb-4">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-10 w-10 rounded-lg" />
-              </div>
-              <Skeleton className="h-8 w-16" />
-            </CardContent>
-          </Card>
+          <div key={i} className="bg-white border border-gray-200 rounded-lg p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+            <div className="flex justify-between items-center mb-4">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-9 w-9 rounded-md" />
+            </div>
+            <Skeleton className="h-8 w-16" />
+          </div>
         ))}
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {cards.map((card, i) => (
-        <Card
+        <div
           key={card.label}
-          className={`animate-fade-in border-black/5 mac-shadow ${card.glowClass}`}
+          className="animate-fade-in bg-white border border-gray-200 rounded-lg p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
           style={{ animationDelay: `${i * 100}ms`, animationFillMode: "backwards" }}
         >
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm text-muted-foreground font-medium">{card.label}</span>
-              <div className={`w-10 h-10 rounded-lg ${card.bgClass} flex items-center justify-center ${card.colorClass}`}>
-                {card.icon}
-              </div>
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-medium text-gray-500">{card.label}</span>
+            <div className={`w-9 h-9 rounded-md ${card.bgClass} flex items-center justify-center`}>
+              {card.icon}
             </div>
-            <div className={`text-3xl font-semibold tracking-tight ${card.colorClass}`}>
-              <AnimatedCounter target={card.value} />
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-3xl font-semibold tracking-tight text-gray-900 tabular-nums">
+            <AnimatedCounter target={card.value} />
+          </div>
+        </div>
       ))}
     </div>
   );

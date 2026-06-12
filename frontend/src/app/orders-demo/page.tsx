@@ -129,8 +129,8 @@ export default function AdvancedOrdersPage() {
       {/* Page Header */}
       <div className="flex items-end justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Campaign Monitor</h1>
-          <p className="text-[11px] text-slate-500 mt-0.5">Track and manage your automated bulk order pipelines.</p>
+          <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Campaign Monitor</h1>
+          <p className="text-xs text-gray-500 mt-0.5">Track and manage your automated bulk order pipelines.</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-slate-500 bg-slate-100 px-3 py-1.5 rounded-md">
@@ -149,34 +149,34 @@ export default function AdvancedOrdersPage() {
         </div>
       </div>
 
-      <Card className="border-0 shadow-sm ring-1 ring-slate-100 rounded-2xl overflow-hidden bg-white flex flex-col">
+      <Card className="rounded-lg overflow-hidden bg-white flex flex-col">
         
         {/* Navigation Tabs */}
-        <div className="flex border-b border-slate-100 px-4">
-          <button className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-indigo-600 relative">
+        <div className="flex border-b border-gray-200 px-4">
+          <button className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-gray-900 relative">
             Bulk Campaigns
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 rounded-t-full"></div>
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-500 rounded-t-full"></div>
           </button>
         </div>
 
         {/* Toolbar */}
-        <div className="p-3 px-4 bg-slate-50/50 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100">
+        <div className="p-3 px-4 bg-gray-50 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200">
           <div className="flex items-center gap-2">
-            <div className="bg-white border border-slate-200 rounded-lg flex items-center p-0.5 shadow-sm">
-              <Button onClick={() => setPlatformFilter("All")} variant="ghost" size="sm" className={`h-7 px-2.5 rounded-md text-[10px] font-bold tracking-wider uppercase ${platformFilter === 'All' ? 'bg-slate-100 text-slate-700' : 'text-slate-500 hover:bg-slate-50'}`}>All</Button>
-              <Button onClick={() => setPlatformFilter("Amazon")} variant="ghost" size="sm" className={`h-7 px-2.5 rounded-md text-[10px] font-bold tracking-wider uppercase ${platformFilter === 'Amazon' ? 'bg-slate-100 text-slate-700' : 'text-slate-500 hover:bg-slate-50'}`}>Amazon</Button>
-              <Button onClick={() => setPlatformFilter("Flipkart")} variant="ghost" size="sm" className={`h-7 px-2.5 rounded-md text-[10px] font-bold tracking-wider uppercase ${platformFilter === 'Flipkart' ? 'bg-slate-100 text-slate-700' : 'text-slate-500 hover:bg-slate-50'}`}>Flipkart</Button>
+            <div className="bg-gray-100 rounded-md flex items-center p-1 gap-0.5">
+              <Button onClick={() => setPlatformFilter("All")} variant="ghost" size="sm" className={`h-7 px-2.5 text-xs font-medium ${platformFilter === 'All' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>All</Button>
+              <Button onClick={() => setPlatformFilter("Amazon")} variant="ghost" size="sm" className={`h-7 px-2.5 text-xs font-medium ${platformFilter === 'Amazon' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>Amazon</Button>
+              <Button onClick={() => setPlatformFilter("Flipkart")} variant="ghost" size="sm" className={`h-7 px-2.5 text-xs font-medium ${platformFilter === 'Flipkart' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>Flipkart</Button>
             </div>
           </div>
           
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <Input 
               type="text" 
               placeholder="Search product or ID..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-8 pl-8 pr-3 rounded-lg border-slate-200 text-[11px] font-medium focus-visible:ring-1 focus-visible:ring-indigo-500 w-64 bg-white"
+              className="h-8 pl-8 pr-3 text-xs w-64"
             />
           </div>
         </div>
@@ -333,16 +333,16 @@ export default function AdvancedOrdersPage() {
 
       {/* Campaign Details Modal Overlay */}
       {selectedCampaign && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-lg shadow-xl border border-gray-200 w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50">
               <div>
-                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                  Campaign Details {selectedCampaign.isMock && <span className="inline-flex w-fit items-center px-2 py-0.5 rounded-[4px] text-[9px] font-bold tracking-widest bg-amber-100 text-amber-800 uppercase">SANDBOX</span>}
+                <h3 className="text-base font-medium text-gray-900 flex items-center gap-2">
+                  Campaign Details {selectedCampaign.isMock && <span className="inline-flex w-fit items-center px-2 py-0.5 rounded text-[9px] font-medium tracking-widest bg-amber-50 text-amber-700 border border-amber-200 uppercase">SANDBOX</span>}
                 </h3>
-                <p className="text-xs text-slate-500 font-mono mt-0.5">{selectedCampaign.id}</p>
+                <p className="text-xs text-gray-500 font-mono mt-0.5">{selectedCampaign.id}</p>
               </div>
-              <button onClick={() => setSelectedCampaign(null)} className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors">
+              <button onClick={() => setSelectedCampaign(null)} className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>

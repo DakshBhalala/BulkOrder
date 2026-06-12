@@ -149,32 +149,32 @@ export default function OrderUnitsHistoryPage() {
       
       <div className="flex items-end justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Ledger & History</h1>
-          <p className="text-[11px] text-slate-500 mt-0.5">Granular view of all processed order units across platforms.</p>
+          <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Ledger &amp; History</h1>
+          <p className="text-xs text-gray-500 mt-0.5">Granular view of all processed order units across platforms.</p>
         </div>
         
-        <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
-          <Button onClick={handleSync} variant="outline" size="sm" className="h-8 px-3 rounded-lg border-slate-200 hover:bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+        <div className="flex items-center gap-2 bg-white p-1 rounded-md border border-gray-200 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          <Button onClick={handleSync} variant="outline" size="sm" className="h-8 px-3 text-xs font-medium">
             <CloudDownload className="w-3.5 h-3.5 mr-1.5" /> Fetch Missing
           </Button>
-          <Button onClick={handleSync} size="sm" className="h-8 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm text-[11px] font-bold uppercase tracking-wider">
+          <Button onClick={handleSync} size="sm" className="h-8 px-3 text-xs font-medium">
             <CloudLightning className={`w-3.5 h-3.5 mr-1.5 ${isSyncing ? 'animate-pulse' : ''}`} /> Force Update Sync
           </Button>
         </div>
       </div>
 
-      <Card className="border-0 shadow-sm ring-1 ring-slate-100 rounded-2xl overflow-hidden bg-white flex flex-col min-h-[600px]">
+      <Card className="rounded-lg overflow-hidden bg-white flex flex-col min-h-[600px]">
         
         {/* Navigation Tabs */}
-        <div className="flex border-b border-slate-100 px-4">
-          <button className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-indigo-600 relative">
+        <div className="flex border-b border-gray-200 px-4">
+          <button className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-gray-900 relative">
             Order Units Ledger
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 rounded-t-full"></div>
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-500 rounded-t-full"></div>
           </button>
         </div>
 
         {/* Dynamic Filters Section */}
-        <div className="bg-slate-50/50 border-b border-slate-100 p-4 space-y-3">
+        <div className="bg-gray-50 border-b border-gray-200 p-4 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2.5">
               <Button 
@@ -417,21 +417,21 @@ export default function OrderUnitsHistoryPage() {
 
       {/* Package Details Modal Overlay */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-lg shadow-xl border border-gray-200 w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-md bg-indigo-50 flex items-center justify-center">
                   <Package className="w-5 h-5 text-indigo-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <h3 className="text-base font-medium text-gray-900 flex items-center gap-2">
                     Package Details
                   </h3>
-                  <p className="text-xs text-slate-500 font-mono mt-0.5">{selectedOrder.orderId}</p>
+                  <p className="text-xs text-gray-500 font-mono mt-0.5">{selectedOrder.orderId}</p>
                 </div>
               </div>
-              <button onClick={() => setSelectedOrder(null)} className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors">
+              <button onClick={() => setSelectedOrder(null)} className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>

@@ -83,7 +83,7 @@ export function ResolveModal({ alert, isOpen, onClose, onResolved }: ResolveModa
         <div className="py-4">
           {alert.type === "OTP_REQUIRED" && (
             <div className="space-y-3">
-              <label className="text-sm font-medium text-slate-700">Enter 6-digit OTP sent to {alert.email}</label>
+              <label className="text-sm font-medium text-gray-700">Enter 6-digit OTP sent to {alert.email}</label>
               <Input
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -95,9 +95,9 @@ export function ResolveModal({ alert, isOpen, onClose, onResolved }: ResolveModa
 
           {alert.type === "CARD_DECLINED" && (
             <div className="space-y-3">
-              <label className="text-sm font-medium text-slate-700">Select Alternative Payment Method</label>
+              <label className="text-sm font-medium text-gray-700">Select Alternative Payment Method</label>
               <Select value={selectedCard} onValueChange={(val) => setSelectedCard(val || "")}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a saved card..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -110,7 +110,7 @@ export function ResolveModal({ alert, isOpen, onClose, onResolved }: ResolveModa
           )}
           
           {alert.type === "ACCOUNT_LOCKED" && (
-            <div className="p-4 bg-orange-50 text-orange-800 rounded-lg text-sm">
+            <div className="p-4 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-sm">
               This account requires manual intervention. Log in via your browser to resolve the lock, then click Resume below.
             </div>
           )}
@@ -118,7 +118,7 @@ export function ResolveModal({ alert, isOpen, onClose, onResolved }: ResolveModa
 
         <DialogFooter className="sm:justify-between">
           <Button variant="ghost" onClick={onClose} disabled={isSubmitting}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting || (alert.type === "OTP_REQUIRED" && otp.length < 4)} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+          <Button onClick={handleSubmit} disabled={isSubmitting || (alert.type === "OTP_REQUIRED" && otp.length < 4)}>
             {isSubmitting ? "Resuming..." : "Apply & Resume Campaign"}
           </Button>
         </DialogFooter>

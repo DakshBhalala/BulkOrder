@@ -103,7 +103,7 @@ export default function OrderDetailPage() {
         <div className="flex items-center gap-4">
           <Link
             href="/"
-            className="w-9 h-9 rounded-lg bg-secondary/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent transition-all"
+            className="w-9 h-9 rounded-md bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-200 transition-colors duration-150"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -121,11 +121,11 @@ export default function OrderDetailPage() {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h1 className="text-[26px] font-semibold text-foreground tracking-tight flex items-center gap-3 mt-1">
-              Order <span className="text-primary font-mono tracking-normal">#{order.order_id}</span>
+            <h1 className="text-2xl font-semibold text-gray-900 tracking-tight flex items-center gap-3 mt-1">
+              Order <span className="text-indigo-600 font-mono tracking-normal">#{order.order_id}</span>
               <StatusBadge status={order.status} />
             </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
+            <p className="text-sm text-gray-500 mt-0.5">
               Customer: {order.customer_name}
             </p>
           </div>
@@ -135,7 +135,6 @@ export default function OrderDetailPage() {
           <Button
             onClick={handleRunAutomation}
             disabled={actionLoading}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
           >
             {actionLoading ? (
               <span className="flex items-center gap-2">
@@ -162,8 +161,8 @@ export default function OrderDetailPage() {
         {/* Left Column — Details */}
         <div className="lg:col-span-2 space-y-6">
           {/* Order Information */}
-          <div className="bg-card rounded-2xl p-6 border border-black/5 mac-shadow animate-fade-in">
-            <h2 className="text-[15px] font-semibold text-foreground mb-4 tracking-tight">Order Information</h2>
+          <div className="bg-white rounded-lg p-5 border border-gray-200 shadow-[0_1px_3px_rgba(0,0,0,0.04)] animate-fade-in">
+            <h2 className="text-base font-medium text-gray-900 mb-4 tracking-tight">Order Information</h2>
             <div className="grid grid-cols-2 gap-4">
               <InfoItem label="Product" value={order.product_name} />
               <InfoItem label="Quantity" value={String(order.quantity)} />
@@ -173,8 +172,8 @@ export default function OrderDetailPage() {
           </div>
 
           {/* Matched Product */}
-          <div className="bg-card rounded-2xl p-6 border border-black/5 mac-shadow animate-fade-in" style={{ animationDelay: "100ms", animationFillMode: "backwards" }}>
-            <h2 className="text-[15px] font-semibold text-foreground mb-4 tracking-tight">Product Matching</h2>
+          <div className="bg-white rounded-lg p-5 border border-gray-200 shadow-[0_1px_3px_rgba(0,0,0,0.04)] animate-fade-in" style={{ animationDelay: "100ms", animationFillMode: "backwards" }}>
+            <h2 className="text-base font-medium text-gray-900 mb-4 tracking-tight">Product Matching</h2>
             {order.matched_product_name ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -184,27 +183,27 @@ export default function OrderDetailPage() {
                     value={`${order.match_score?.toFixed(1)}%`}
                     valueClass={
                       (order.match_score || 0) >= 80
-                        ? "text-emerald"
+                        ? "text-emerald-600"
                         : (order.match_score || 0) >= 60
-                        ? "text-amber"
-                        : "text-rose"
+                        ? "text-amber-600"
+                        : "text-red-500"
                     }
                   />
                 </div>
                 {order.matched_product && (
-                  <div className="bg-secondary/40 rounded-lg p-3 mt-2">
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mt-2">
                     <div className="grid grid-cols-3 gap-3 text-sm">
                       <div>
-                        <span className="text-muted-foreground text-xs">SKU</span>
-                        <p className="font-mono text-foreground">{order.matched_product.sku || "—"}</p>
+                        <span className="text-gray-400 text-xs">SKU</span>
+                        <p className="font-mono text-gray-900">{order.matched_product.sku || "—"}</p>
                       </div>
                       <div>
-                        <span className="text-muted-foreground text-xs">Price</span>
-                        <p className="text-foreground">${order.matched_product.price.toFixed(2)}</p>
+                        <span className="text-gray-400 text-xs">Price</span>
+                        <p className="text-gray-900">${order.matched_product.price.toFixed(2)}</p>
                       </div>
                       <div>
-                        <span className="text-muted-foreground text-xs">In Stock</span>
-                        <p className={order.matched_product.in_stock ? "text-emerald" : "text-rose"}>
+                        <span className="text-gray-400 text-xs">In Stock</span>
+                        <p className={order.matched_product.in_stock ? "text-emerald-600" : "text-red-500"}>
                           {order.matched_product.in_stock ? "Yes" : "No"}
                         </p>
                       </div>
@@ -213,13 +212,13 @@ export default function OrderDetailPage() {
                 )}
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">No product match yet. Run matching to find supplier products.</p>
+              <p className="text-gray-500 text-sm">No product match yet. Run matching to find supplier products.</p>
             )}
           </div>
 
           {/* Supplier & Tracking */}
-          <div className="bg-card rounded-2xl p-6 border border-black/5 mac-shadow animate-fade-in" style={{ animationDelay: "200ms", animationFillMode: "backwards" }}>
-            <h2 className="text-[15px] font-semibold text-foreground mb-4 tracking-tight">Supplier & Tracking</h2>
+          <div className="bg-white rounded-lg p-5 border border-gray-200 shadow-[0_1px_3px_rgba(0,0,0,0.04)] animate-fade-in" style={{ animationDelay: "200ms", animationFillMode: "backwards" }}>
+            <h2 className="text-base font-medium text-gray-900 mb-4 tracking-tight">Supplier & Tracking</h2>
             <div className="grid grid-cols-2 gap-4">
               <InfoItem label="Supplier" value={order.supplier_name || "Not assigned"} />
               <InfoItem
@@ -231,7 +230,7 @@ export default function OrderDetailPage() {
                 label="Tracking Number"
                 value={order.tracking_number || "—"}
                 mono
-                valueClass={order.tracking_number ? "text-emerald" : undefined}
+                valueClass={order.tracking_number ? "text-emerald-600" : undefined}
               />
               <InfoItem
                 label="Last Updated"
@@ -243,8 +242,8 @@ export default function OrderDetailPage() {
 
         {/* Right Column — Timeline */}
         <div className="space-y-6">
-          <div className="bg-card rounded-2xl p-6 border border-black/5 mac-shadow animate-fade-in" style={{ animationDelay: "150ms", animationFillMode: "backwards" }}>
-            <h2 className="text-[15px] font-semibold text-foreground mb-4 tracking-tight">Processing History</h2>
+          <div className="bg-white rounded-lg p-5 border border-gray-200 shadow-[0_1px_3px_rgba(0,0,0,0.04)] animate-fade-in" style={{ animationDelay: "150ms", animationFillMode: "backwards" }}>
+            <h2 className="text-base font-medium text-gray-900 mb-4 tracking-tight">Processing History</h2>
             <OrderTimeline history={order.history} />
           </div>
         </div>
@@ -266,8 +265,8 @@ function InfoItem({
 }) {
   return (
     <div>
-      <span className="text-[11px] text-muted-foreground uppercase tracking-widest">{label}</span>
-      <p className={`text-[13px] font-medium mt-0.5 ${mono ? "font-mono" : ""} ${valueClass || "text-foreground"}`}>
+      <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">{label}</span>
+      <p className={`text-sm font-medium mt-0.5 ${mono ? "font-mono" : ""} ${valueClass || "text-gray-900"}`}>
         {value}
       </p>
     </div>

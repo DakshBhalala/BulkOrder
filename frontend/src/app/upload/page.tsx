@@ -58,15 +58,15 @@ export default function UploadPage() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <h1 className="text-2xl font-bold text-foreground tracking-tight mt-2">Upload Orders</h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h1 className="text-2xl font-semibold text-gray-900 tracking-tight mt-2">Upload Orders</h1>
+        <p className="text-sm text-gray-500 mt-1">
           Import a CSV file to add orders to the automation pipeline
         </p>
       </div>
 
       {/* Upload Form */}
-      <div className="minimal-card rounded-xl p-6">
-        <h2 className="text-base font-semibold text-foreground mb-4">Import CSV</h2>
+      <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+        <h2 className="text-base font-medium text-gray-900 mb-4">Import CSV</h2>
         <UploadForm onUploadComplete={handleUploadComplete} />
       </div>
 
@@ -74,30 +74,30 @@ export default function UploadPage() {
       {uploadResult && (
         <div className="space-y-5 animate-fade-in">
           {/* Stats */}
-          <div className="minimal-card rounded-xl p-6">
-            <h2 className="text-base font-semibold text-foreground mb-4">Upload Results</h2>
+          <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+            <h2 className="text-base font-medium text-gray-900 mb-4">Upload Results</h2>
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-secondary/50 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-foreground">{uploadResult.total_rows}</p>
-                <p className="text-xs text-muted-foreground mt-1">Total Rows</p>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                <p className="text-2xl font-semibold text-gray-900 tabular-nums">{uploadResult.total_rows}</p>
+                <p className="text-xs text-gray-500 mt-1">Total Rows</p>
               </div>
-              <div className="bg-emerald/10 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-emerald">{uploadResult.valid_rows}</p>
-                <p className="text-xs text-muted-foreground mt-1">Valid</p>
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-center">
+                <p className="text-2xl font-semibold text-emerald-600 tabular-nums">{uploadResult.valid_rows}</p>
+                <p className="text-xs text-gray-500 mt-1">Valid</p>
               </div>
-              <div className={`${uploadResult.invalid_rows > 0 ? "bg-rose/10" : "bg-secondary/50"} rounded-lg p-4 text-center`}>
-                <p className={`text-2xl font-bold ${uploadResult.invalid_rows > 0 ? "text-rose" : "text-foreground"}`}>
+              <div className={`${uploadResult.invalid_rows > 0 ? "bg-red-50 border-red-200" : "bg-gray-50 border-gray-200"} border rounded-lg p-4 text-center`}>
+                <p className={`text-2xl font-semibold tabular-nums ${uploadResult.invalid_rows > 0 ? "text-red-500" : "text-gray-900"}`}>
                   {uploadResult.invalid_rows}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">Invalid</p>
+                <p className="text-xs text-gray-500 mt-1">Invalid</p>
               </div>
             </div>
 
             {/* Errors */}
             {uploadResult.errors.length > 0 && (
-              <div className="mt-4 bg-destructive/10 border border-destructive/30 rounded-lg p-3">
-                <p className="text-sm font-medium text-destructive mb-2">Validation Errors:</p>
-                <ul className="text-xs text-destructive/80 space-y-0.5">
+              <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-sm font-medium text-red-600 mb-2">Validation Errors:</p>
+                <ul className="text-xs text-red-500 space-y-0.5">
                   {uploadResult.errors.map((e, i) => (
                     <li key={i}>• {e}</li>
                   ))}
@@ -110,11 +110,10 @@ export default function UploadPage() {
           {uploadResult.orders.length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-semibold text-foreground">Imported Orders</h2>
+                <h2 className="text-base font-medium text-gray-900">Imported Orders</h2>
                 <Button
                   onClick={handleRunMatching}
                   disabled={isMatching}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
                 >
                   {isMatching ? (
                     <span className="flex items-center gap-2">
@@ -149,15 +148,15 @@ export default function UploadPage() {
       )}
 
       {/* CSV Format Help */}
-      <div className="minimal-card rounded-xl p-6">
-        <h2 className="text-base font-semibold text-foreground mb-3">CSV Format</h2>
-        <p className="text-sm text-muted-foreground mb-3">
+      <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+        <h2 className="text-base font-medium text-gray-900 mb-3">CSV Format</h2>
+        <p className="text-sm text-gray-500 mb-3">
           Your CSV file should contain the following columns:
         </p>
-        <div className="bg-secondary/50 rounded-lg p-4 font-mono text-sm">
-          <div className="text-muted-foreground">order_id,product_name,quantity,customer_name</div>
-          <div className="text-foreground mt-1">1001,iPhone 15 Black 128GB,2,John</div>
-          <div className="text-foreground">1002,AirPods Pro 2,1,Sarah</div>
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 font-mono text-sm">
+          <div className="text-gray-500">order_id,product_name,quantity,customer_name</div>
+          <div className="text-gray-900 mt-1">1001,iPhone 15 Black 128GB,2,John</div>
+          <div className="text-gray-900">1002,AirPods Pro 2,1,Sarah</div>
         </div>
       </div>
     </div>

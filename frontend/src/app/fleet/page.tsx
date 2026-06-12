@@ -215,17 +215,17 @@ export default function FleetPage() {
     <div className="space-y-8 max-w-6xl animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
       <div className="space-y-1">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2">
+        <h1 className="text-2xl font-semibold text-gray-900 tracking-tight flex items-center gap-2">
           <Server className="w-6 h-6 text-indigo-600" />
           Bot Fleet Management
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-gray-500 mt-1">
           Manage buyer accounts, residential proxies, and active automation sessions.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-slate-200 pb-px">
+      <div className="flex gap-4 border-b border-gray-200 pb-px">
         <button
           onClick={() => setActiveTab("accounts")}
           className={`pb-3 text-sm font-semibold flex items-center gap-2 transition-colors relative ${activeTab === "accounts" ? "text-indigo-600" : "text-slate-500 hover:text-slate-800"}`}
@@ -261,8 +261,8 @@ export default function FleetPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Charts Col */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="minimal-card rounded-xl p-6 shadow-sm border border-slate-200/60 bg-white">
-              <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+            <div className="minimal-card rounded-lg p-6 border border-gray-200 bg-white">
+              <h2 className="text-base font-medium text-gray-900 mb-6 flex items-center gap-2">
                 <Globe className="w-5 h-5 text-blue-500" />
                 Proxy IP Success Rates
               </h2>
@@ -290,30 +290,30 @@ export default function FleetPage() {
           {/* Side Cards Col */}
           <div className="space-y-6">
             {/* 2Captcha Balance */}
-            <div className="minimal-card rounded-xl p-6 shadow-sm border border-slate-200/60 bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
+            <div className="rounded-lg p-6 border border-gray-200 shadow-[0_1px_3px_rgba(0,0,0,0.04)] bg-gray-900 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-10">
                 <Shield className="w-24 h-24" />
               </div>
-              <h3 className="text-sm font-medium text-slate-300 mb-1">2Captcha API Balance</h3>
-              <div className="text-4xl font-bold tracking-tight mb-2">
+              <h3 className="text-sm font-medium text-gray-400 mb-1">2Captcha API Balance</h3>
+              <div className="text-4xl font-semibold tracking-tight mb-2">
                 {analytics?.captcha_balance >= 0 ? `$${analytics.captcha_balance.toFixed(2)}` : 'Error'}
               </div>
-              <p className="text-xs text-slate-400 flex items-center gap-1 mt-4">
+              <p className="text-xs text-gray-400 flex items-center gap-1 mt-4">
                 <CheckCircle2 className="w-3 h-3 text-emerald-400" /> API Connected successfully
               </p>
             </div>
 
             {/* Velocity Limits Alerts */}
-            <div className="minimal-card rounded-xl p-6 shadow-sm border border-slate-200/60 bg-white">
-              <h3 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                <Server className="w-4 h-4 text-orange-500" />
+            <div className="minimal-card rounded-lg p-6 border border-gray-200 bg-white">
+              <h3 className="text-sm font-medium text-gray-900 mb-4 flex items-center gap-2">
+                <Server className="w-4 h-4 text-amber-500" />
                 Amazon Velocity Warnings
               </h3>
               <div className="space-y-3">
                 {analytics?.velocity_alerts && analytics.velocity_alerts.length > 0 ? (
                   analytics.velocity_alerts.map((alert: VelocityAlert, i: number) => (
-                    <div key={i} className="bg-orange-50/50 border border-orange-100 rounded-lg p-3 text-xs text-orange-800">
-                      <span className="font-semibold block mb-1">{alert.email}</span>
+                    <div key={i} className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                      <span className="font-medium block mb-1">{alert.email}</span>
                       {alert.message}
                     </div>
                   ))
@@ -332,20 +332,20 @@ export default function FleetPage() {
         
         {/* Left Col: Table */}
         <div className="lg:col-span-2">
-          <div className="minimal-card rounded-xl overflow-hidden shadow-sm border border-slate-200/60">
-            <div className="bg-slate-50/50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-                {activeTab === "accounts" ? <Shield className="w-4 h-4 text-emerald-500" /> : activeTab === "proxies" ? <Globe className="w-4 h-4 text-blue-500" /> : <CreditCardIcon className="w-4 h-4 text-purple-500" />}
+          <div className="minimal-card rounded-lg overflow-hidden border border-gray-200 bg-white">
+            <div className="bg-gray-50 px-5 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                {activeTab === "accounts" ? <Shield className="w-4 h-4 text-emerald-500" /> : activeTab === "proxies" ? <Globe className="w-4 h-4 text-blue-500" /> : <CreditCardIcon className="w-4 h-4 text-violet-500" />}
                 {activeTab === "accounts" ? "Active Sessions" : activeTab === "proxies" ? "Proxy Pool" : "Payment Methods"}
               </h2>
-              <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
+              <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
                 {activeTab === "accounts" ? accounts.length : activeTab === "proxies" ? proxies.length : cards.length} Total
               </span>
             </div>
             
             <div className="p-0 overflow-x-auto">
               <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-slate-50 text-slate-500 text-xs font-semibold tracking-wider">
+                <thead className="bg-gray-50 text-gray-500 text-xs font-medium uppercase tracking-wider">
                   <tr>
                     {activeTab === "accounts" ? (
                       <>
@@ -371,7 +371,7 @@ export default function FleetPage() {
                     )}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 bg-white">
+                <tbody className="divide-y divide-gray-100 bg-white">
                   {isLoading ? (
                     <tr><td colSpan={4} className="px-5 py-8 text-center text-slate-400 text-xs">Loading fleet data...</td></tr>
                   ) : activeTab === "accounts" && accounts.length === 0 ? (
@@ -448,7 +448,7 @@ export default function FleetPage() {
 
         {/* Right Col: Add Form */}
         <div className="lg:col-span-1">
-          <div className="minimal-card rounded-xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-200/60 bg-white/50 backdrop-blur-xl">
+          <div className="minimal-card rounded-lg p-5 border border-gray-200 bg-white">
             <h3 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
               <Plus className="w-4 h-4 text-indigo-500" />
               Add {activeTab === "accounts" ? "Buyer Account" : activeTab === "proxies" ? "New Proxy" : "Payment Card"}

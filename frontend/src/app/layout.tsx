@@ -26,7 +26,7 @@ export default function RootLayout({
         <TooltipProvider>
           <Sidebar />
           <main className="flex-1 ml-64 min-h-screen">
-            <div className="p-8">{children}</div>
+            <div className="px-8 py-6">{children}</div>
           </main>
           <Toaster />
         </TooltipProvider>

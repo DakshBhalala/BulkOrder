@@ -74,24 +74,24 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-sidebar/80 backdrop-blur-2xl border-r border-sidebar-border flex flex-col z-50">
+    <aside className="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 flex flex-col z-50">
       {/* Logo */}
-      <div className="p-6">
+      <div className="px-5 py-6">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/90 to-primary flex items-center justify-center shadow-sm">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-9 h-9 rounded-lg bg-gray-900 text-white flex items-center justify-center">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
           </div>
           <div>
-            <h1 className="font-semibold text-foreground text-[15px] tracking-tight">BulkOrder</h1>
-            <p className="text-[10px] text-muted-foreground tracking-widest uppercase mt-0.5">Automation</p>
+            <h1 className="font-semibold text-gray-900 text-[15px] tracking-tight">BulkOrder</h1>
+            <p className="text-[10px] text-gray-400 font-medium tracking-widest uppercase mt-0.5">Automation</p>
           </div>
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-2 space-y-0.5">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -99,11 +99,11 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={`
-                flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-200
+                flex items-center gap-3 px-3 py-2 rounded-md text-[13px] transition-colors duration-150
                 ${
                   isActive
-                    ? "bg-white/60 text-slate-900 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-white/50"
-                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/50"
+                    ? "bg-gray-100 text-gray-900 font-medium"
+                    : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                 }
               `}
             >
@@ -115,7 +115,7 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 space-y-2">
+      <div className="p-3 space-y-2">
         <button
           onClick={async () => {
             if (confirm("Are you sure you want to reset the demo? All orders will be deleted.")) {
@@ -127,16 +127,16 @@ export function Sidebar() {
               }
             }
           }}
-          className="w-full text-left px-3 py-2 text-[13px] font-medium text-red-500 hover:bg-red-50/50 hover:text-red-600 rounded-xl transition-colors flex items-center gap-2"
+          className="w-full text-left px-3 py-2 text-[13px] font-medium text-red-500 hover:bg-red-50 hover:text-red-600 rounded-md transition-colors duration-150 flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
           Reset Demo
         </button>
-        <div className="rounded-xl p-3 bg-white/40 border border-white/20 text-center shadow-sm">
-          <p className="text-[11px] text-slate-500">Demo Version</p>
-          <p className="text-[11px] font-semibold text-slate-800 mt-0.5 tracking-tight">v1.0.0</p>
+        <div className="rounded-lg p-3 bg-gray-50 border border-gray-200 text-center">
+          <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">Demo Version</p>
+          <p className="text-[11px] font-semibold text-gray-900 mt-0.5 tracking-tight">v1.0.0</p>
         </div>
       </div>
     </aside>

@@ -225,29 +225,29 @@ export default function SmartOrderPage() {
       <input type="file" ref={cardsInputRef} className="hidden" accept=".csv" onChange={(e) => handleFileUpload(e, 'cards')} />
       
       {/* Header Section */}
-      <div className="flex items-end justify-between mac-glass border-slate-200/40 p-5 rounded-2xl mac-shadow">
+      <div className="flex items-end justify-between bg-white border border-gray-200 p-5 rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-bold tracking-widest uppercase mb-1.5">
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-medium tracking-widest uppercase mb-1.5">
             <Sparkles className="w-3 h-3" /> New Campaign
           </div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Smart Bulk Order</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Smart Bulk Order</h1>
         </div>
         
         <div className="flex items-center gap-3">
-          <Button onClick={handleReset} variant="ghost" size="sm" className="h-8 text-xs text-slate-500 hover:text-slate-900 gap-1.5">
+          <Button onClick={handleReset} variant="ghost" size="sm" className="h-8 text-xs gap-1.5">
             <RefreshCw className="w-3.5 h-3.5" /> Reset Form
           </Button>
           
-          <div className="bg-slate-100 p-1 rounded-lg flex items-center shadow-inner">
+          <div className="bg-gray-100 p-1 rounded-md inline-flex items-center gap-0.5">
             <button
               onClick={() => setIsReal(false)}
-              className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${!isReal ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-700'}`}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${!isReal ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Sandbox
             </button>
             <button
               onClick={() => setIsReal(true)}
-              className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${isReal ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200' : 'text-slate-400 hover:text-slate-700'}`}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${isReal ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Production
             </button>
@@ -261,12 +261,12 @@ export default function SmartOrderPage() {
         <div className="xl:col-span-2 space-y-6">
           
           {/* 1. Target Product */}
-          <Card className="border-0 mac-shadow ring-1 ring-slate-100/50 rounded-xl overflow-hidden mac-glass group hover:ring-slate-200/80 transition-all duration-300">
-            <div className="px-4 py-3 border-b border-slate-50 bg-slate-50/50 flex items-center gap-2.5">
-              <div className="bg-indigo-100 text-indigo-600 p-1.5 rounded-lg">
+          <Card className="rounded-lg overflow-hidden bg-white">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex items-center gap-2.5">
+              <div className="bg-indigo-50 text-indigo-600 p-1.5 rounded-md">
                 <ShoppingCart className="w-4 h-4" />
               </div>
-              <h2 className="text-sm font-semibold text-slate-900">Target Product</h2>
+              <h2 className="text-sm font-medium text-gray-900">Target Product</h2>
             </div>
             <div className="p-4 space-y-4">
               <div className="grid grid-cols-3 gap-4">
@@ -307,24 +307,22 @@ export default function SmartOrderPage() {
 
               {/* Premium Product Preview Card */}
               {productData && (
-                <div className="mt-5 p-5 rounded-xl border border-slate-200/50 bg-white/60 backdrop-blur-md flex gap-5 animate-in slide-in-from-top-4 duration-500 mac-shadow relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-100/50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
-                  
-                  <div className="w-20 h-20 shrink-0 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-3xl shadow-sm z-10">
+                <div className="mt-5 p-5 rounded-lg border border-gray-200 bg-gray-50 flex gap-5 animate-in slide-in-from-top-4 duration-500 relative overflow-hidden">
+                  <div className="w-20 h-20 shrink-0 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-3xl shadow-[0_1px_2px_rgba(0,0,0,0.03)] z-10">
                     📱
                   </div>
                   
                   <div className="flex-1 flex flex-col justify-center z-10">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-sm font-bold text-slate-900 leading-snug">{productData.title}</h3>
+                        <h3 className="text-sm font-semibold text-gray-900 leading-snug">{productData.title}</h3>
                         <div className="flex items-baseline gap-2 mt-1.5">
-                          <span className="text-lg font-black text-slate-900 tracking-tight">{productData.price}</span>
+                          <span className="text-lg font-semibold text-gray-900 tracking-tight">{productData.price}</span>
                           {productData.originalPrice && (
-                            <span className="text-xs font-medium text-slate-400 line-through">{productData.originalPrice}</span>
+                            <span className="text-xs font-medium text-gray-400 line-through">{productData.originalPrice}</span>
                           )}
                           {productData.discount && (
-                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-md border border-emerald-200">
+                            <span className="text-[10px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
                               {productData.discount}
                             </span>
                           )}
@@ -332,48 +330,48 @@ export default function SmartOrderPage() {
                       </div>
                       
                       <div className="text-right shrink-0">
-                        <div className="inline-flex items-center gap-1.5 bg-white px-2 py-1 rounded-lg border border-slate-100 shadow-sm">
+                        <div className="inline-flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border border-gray-200">
                           <span className="text-amber-500 text-xs">★</span>
-                          <span className="text-xs font-bold text-slate-700">{productData.rating}</span>
+                          <span className="text-xs font-medium text-gray-700">{productData.rating}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-indigo-100/60">
+                    <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-gray-200">
                       <div className="space-y-1">
-                        <div className="flex items-center gap-1.5 text-[10px] text-slate-500 uppercase font-bold tracking-wider">
-                          <Package className="w-3 h-3 text-slate-400" /> Seller Details
+                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 uppercase font-medium tracking-wider">
+                          <Package className="w-3 h-3 text-gray-400" /> Seller Details
                         </div>
-                        <div className="text-xs font-semibold text-slate-800 line-clamp-1">{productData.seller}</div>
-                        <div className="text-[10px] text-slate-500 font-medium">via {productData.platformName}</div>
+                        <div className="text-xs font-medium text-gray-800 line-clamp-1">{productData.seller}</div>
+                        <div className="text-[10px] text-gray-500 font-medium">via {productData.platformName}</div>
                       </div>
                       
                       <div className="space-y-1">
-                        <div className="flex items-center gap-1.5 text-[10px] text-slate-500 uppercase font-bold tracking-wider">
-                          <FileText className="w-3 h-3 text-slate-400" /> Tax Breakdown
+                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 uppercase font-medium tracking-wider">
+                          <FileText className="w-3 h-3 text-gray-400" /> Tax Breakdown
                         </div>
                         {productData.basePrice ? (
                           <>
-                            <div className="text-[11px] text-slate-600 font-medium flex justify-between">
-                              <span>Base:</span> <span className="font-semibold text-slate-800">{productData.basePrice}</span>
+                            <div className="text-[11px] text-gray-600 font-medium flex justify-between">
+                              <span>Base:</span> <span className="font-medium text-gray-800">{productData.basePrice}</span>
                             </div>
-                            <div className="text-[11px] text-slate-600 font-medium flex justify-between">
-                              <span>GST (18%):</span> <span className="font-semibold text-slate-800">{productData.gstAmount}</span>
+                            <div className="text-[11px] text-gray-600 font-medium flex justify-between">
+                              <span>GST (18%):</span> <span className="font-medium text-gray-800">{productData.gstAmount}</span>
                             </div>
                           </>
                         ) : (
-                          <div className="text-[11px] text-slate-500 italic">Tax info unavailable</div>
+                          <div className="text-[11px] text-gray-500 italic">Tax info unavailable</div>
                         )}
                       </div>
                     </div>
 
                     <div className="mt-3 flex items-center justify-between">
                       {productData.inStock ? (
-                        <div className="inline-flex items-center gap-1.5 text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100">
+                        <div className="inline-flex items-center gap-1.5 text-[11px] text-emerald-700 font-medium bg-emerald-50 px-2 py-1 rounded border border-emerald-200">
                           <Check className="w-3.5 h-3.5" /> In Stock & Ready
                         </div>
                       ) : (
-                        <div className="inline-flex items-center gap-1.5 text-[11px] text-rose-700 font-bold bg-rose-50 px-2 py-1 rounded-md border border-rose-100">
+                        <div className="inline-flex items-center gap-1.5 text-[11px] text-red-700 font-medium bg-red-50 px-2 py-1 rounded border border-red-200">
                           <X className="w-3.5 h-3.5" /> Currently Unavailable
                         </div>
                       )}
@@ -386,13 +384,13 @@ export default function SmartOrderPage() {
           </Card>
 
           {/* 2. Authentication & Accounts */}
-          <Card className="border-0 mac-shadow ring-1 ring-slate-100/50 rounded-xl overflow-hidden mac-glass group hover:ring-slate-200/80 transition-all duration-300">
-            <div className="px-4 py-3 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
+          <Card className="rounded-lg overflow-hidden bg-white">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="bg-indigo-100 text-indigo-600 p-1.5 rounded-lg">
+                <div className="bg-indigo-50 text-indigo-600 p-1.5 rounded-md">
                   <Mail className="w-4 h-4" />
                 </div>
-                <h2 className="text-sm font-semibold text-slate-900">Accounts & Limits</h2>
+                <h2 className="text-sm font-medium text-gray-900">Accounts & Limits</h2>
               </div>
               <CustomSwitch checked={smartIdEnabled} onChange={() => setSmartIdEnabled(!smartIdEnabled)} label="Smart AI Selection" />
             </div>
@@ -440,12 +438,12 @@ export default function SmartOrderPage() {
           </Card>
 
           {/* 3. Payment & Delivery */}
-          <Card className="border-0 mac-shadow ring-1 ring-slate-100/50 rounded-xl overflow-hidden mac-glass group hover:ring-slate-200/80 transition-all duration-300">
-            <div className="px-4 py-3 border-b border-slate-50 bg-slate-50/50 flex items-center gap-2.5">
-              <div className="bg-indigo-100 text-indigo-600 p-1.5 rounded-lg">
+          <Card className="rounded-lg overflow-hidden bg-white">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex items-center gap-2.5">
+              <div className="bg-indigo-50 text-indigo-600 p-1.5 rounded-md">
                 <CreditCard className="w-4 h-4" />
               </div>
-              <h2 className="text-sm font-semibold text-slate-900">Payment Strategy</h2>
+              <h2 className="text-sm font-medium text-gray-900">Payment Strategy</h2>
             </div>
             <div className="p-4 space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -488,13 +486,13 @@ export default function SmartOrderPage() {
           </Card>
 
           {/* 4. Fulfillment Details */}
-          <Card className="border-0 mac-shadow ring-1 ring-slate-100/50 rounded-xl overflow-hidden mac-glass group hover:ring-slate-200/80 transition-all duration-300">
-            <div className="px-4 py-3 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
+          <Card className="rounded-lg overflow-hidden bg-white">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="bg-indigo-100 text-indigo-600 p-1.5 rounded-lg">
+                <div className="bg-indigo-50 text-indigo-600 p-1.5 rounded-md">
                   <Package className="w-4 h-4" />
                 </div>
-                <h2 className="text-sm font-semibold text-slate-900">Fulfillment Parameters</h2>
+                <h2 className="text-sm font-medium text-gray-900">Fulfillment Parameters</h2>
               </div>
               <CustomSwitch checked={cod} onChange={() => setCod(!cod)} label="Force COD" />
             </div>
@@ -578,63 +576,63 @@ export default function SmartOrderPage() {
 
         {/* Floating Preview Sidebar */}
         <div className="xl:col-span-1">
-          <div className="sticky top-6 rounded-2xl p-1 bg-gradient-to-b from-indigo-50 to-white border border-indigo-100 shadow-xl shadow-indigo-100/50">
+          <div className="sticky top-6 rounded-lg bg-white border border-gray-200 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
             <Card className="border-0 shadow-none bg-transparent h-full flex flex-col">
-              <div className="px-5 py-4 border-b border-indigo-100/50">
+              <div className="px-5 py-4 border-b border-gray-200">
                 <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-sm font-bold text-slate-900">Campaign Summary</h3>
+                  <h3 className="text-sm font-medium text-gray-900">Campaign Summary</h3>
                   {isReal ? (
-                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-[9px] font-bold tracking-widest uppercase animate-pulse">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span> Live
+                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 text-[9px] font-medium tracking-widest uppercase">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Live
                     </div>
                   ) : (
-                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 text-[9px] font-bold tracking-widest uppercase">
+                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200 text-[9px] font-medium tracking-widest uppercase">
                       Sandbox
                     </div>
                   )}
                 </div>
-                <p className="text-[11px] text-slate-500">Real-time configuration</p>
+                <p className="text-[11px] text-gray-500">Real-time configuration</p>
               </div>
 
               <div className="p-5 space-y-4 flex-1">
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center pb-2 border-b border-slate-100 border-dashed">
-                    <span className="text-[11px] font-medium text-slate-500">Target Platform</span>
-                    <span className="text-[11px] font-bold text-indigo-700">{platform}</span>
+                  <div className="flex justify-between items-center pb-2 border-b border-gray-100 border-dashed">
+                    <span className="text-[11px] font-medium text-gray-500">Target Platform</span>
+                    <span className="text-[11px] font-medium text-indigo-600">{platform}</span>
                   </div>
                   
-                  <div className="flex justify-between items-center pb-2 border-b border-slate-100 border-dashed">
-                    <span className="text-[11px] font-medium text-slate-500">URL Status</span>
-                    <span className="flex items-center gap-1 text-[11px] font-bold text-slate-900">
+                  <div className="flex justify-between items-center pb-2 border-b border-gray-100 border-dashed">
+                    <span className="text-[11px] font-medium text-gray-500">URL Status</span>
+                    <span className="flex items-center gap-1 text-[11px] font-medium text-gray-900">
                       {url ? <><Check className="w-3.5 h-3.5 text-emerald-500" /> Linked</> : "Pending..."}
                     </span>
                   </div>
 
-                  <div className="flex justify-between items-center pb-2 border-b border-slate-100 border-dashed">
-                    <span className="text-[11px] font-medium text-slate-500">Card Network</span>
-                    <span className="text-[11px] font-bold text-slate-900">{cardType.replace('_', ' ')}</span>
+                  <div className="flex justify-between items-center pb-2 border-b border-gray-100 border-dashed">
+                    <span className="text-[11px] font-medium text-gray-500">Card Network</span>
+                    <span className="text-[11px] font-medium text-gray-900">{cardType.replace('_', ' ')}</span>
                   </div>
 
-                  <div className="flex justify-between items-center pb-2 border-b border-slate-100 border-dashed">
-                    <span className="text-[11px] font-medium text-slate-500">Smart AI Select</span>
-                    <span className={`text-[11px] font-bold ${smartIdEnabled ? 'text-emerald-600' : 'text-slate-400'}`}>
+                  <div className="flex justify-between items-center pb-2 border-b border-gray-100 border-dashed">
+                    <span className="text-[11px] font-medium text-gray-500">Smart AI Select</span>
+                    <span className={`text-[11px] font-medium ${smartIdEnabled ? 'text-emerald-600' : 'text-gray-400'}`}>
                       {smartIdEnabled ? "Active" : "Disabled"}
                     </span>
                   </div>
                   
-                  <div className="flex justify-between items-center pb-2 border-b border-slate-100 border-dashed">
-                    <span className="text-[11px] font-medium text-slate-500">Order Quantities</span>
-                    <span className="text-[11px] font-bold text-slate-900">{quantityTotal} Total / {quantityPerOrder} per cart</span>
+                  <div className="flex justify-between items-center pb-2 border-b border-gray-100 border-dashed">
+                    <span className="text-[11px] font-medium text-gray-500">Order Quantities</span>
+                    <span className="text-[11px] font-medium text-gray-900">{quantityTotal} Total / {quantityPerOrder} per cart</span>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-100 space-y-1.5">
-                  <h4 className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Routing</h4>
-                  <p className="text-xs font-bold text-slate-900">{deliveryAddress.split(',')[0]}</p>
-                  <p className="text-[10px] font-medium text-slate-500 leading-relaxed">
+                <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 space-y-1.5">
+                  <h4 className="text-[9px] font-medium text-gray-400 uppercase tracking-wider mb-1">Routing</h4>
+                  <p className="text-xs font-medium text-gray-900">{deliveryAddress.split(',')[0]}</p>
+                  <p className="text-[10px] font-medium text-gray-500 leading-relaxed">
                     Delivery &le; {deliveryDays || 0} days.<br/>
                     {cod ? "Pay: Cash on Delivery" : "Pay: Prepaid"}<br/>
-                    {gstMandatory ? <span className="text-emerald-600 font-bold">B2B GST</span> : "B2C Billing"}
+                    {gstMandatory ? <span className="text-emerald-600 font-medium">B2B GST</span> : "B2C Billing"}
                   </p>
                 </div>
               </div>
@@ -643,7 +641,7 @@ export default function SmartOrderPage() {
                 <Button 
                   onClick={handleSubmit} 
                   disabled={isSubmitting || !url} 
-                  className="w-full h-12 text-[13px] font-bold tracking-wide rounded-xl bg-slate-900 hover:bg-slate-800 text-white mac-shadow"
+                  className="w-full h-12 text-sm font-medium tracking-wide"
                 >
                   {isSubmitting ? "Booting Sub-Agents..." : "Launch Campaign"}
                 </Button>
