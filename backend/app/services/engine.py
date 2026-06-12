@@ -7,7 +7,9 @@ from app.database import SessionLocal
 from app.models import Campaign, Alert, HistoryUnit, PlatformMetric
 from app.services.bot import run_bot_campaign
 
-active_bot_tasks = set()
+import math
+
+active_bot_tasks_count = {}
 
 async def simulation_engine():
     """Background task to simulate campaign progression."""
@@ -18,12 +20,35 @@ async def simulation_engine():
         try:
             campaigns = db.query(Campaign).filter(Campaign.status == "Processing").all()
             for campaign in campaigns:
-                # Spawn the actual Playwright bot instead of faking it!
-                # Ensure we don't spawn multiple bots for the same campaign while it's processing
-                if campaign.id not in active_bot_tasks:
-                    active_bot_tasks.add(campaign.id)
-                    task = asyncio.create_task(run_bot_campaign(campaign.id))
-                    task.add_done_callback(lambda t, cid=campaign.id: active_bot_tasks.discard(cid))
+                units_completed = campaign.unitsCompleted or 0
+                units_total = campaign.unitsTotal or 1
+                quantity_per_order = campaign.quantityPerOrder or 1
+                
+                if units_completed >= units_total:
+                    campaign.status = "Completed"
+                    db.commit()
+                    continue
+                    
+                total_orders_needed = math.ceil((units_total - units_completed) / quantity_per_order)
+                
+                # How many tasks are already running for this campaign?
+                running_tasks = active_bot_tasks_count.get(campaign.id, 0)
+                
+                # Spawn new tasks up to the total needed
+                orders_to_spawn = total_orders_needed - running_tasks
+                
+                if orders_to_spawn > 0:
+                    for _ in range(orders_to_spawn):
+                        active_bot_tasks_count[campaign.id] = active_bot_tasks_count.get(campaign.id, 0) + 1
+                        
+                        task = asyncio.create_task(run_bot_campaign(campaign.id))
+                        
+                        def task_done_callback(t, cid=campaign.id):
+                            active_bot_tasks_count[cid] -= 1
+                            if active_bot_tasks_count[cid] <= 0:
+                                active_bot_tasks_count.pop(cid, None)
+                                
+                        task.add_done_callback(task_done_callback)
                     
             db.commit()
             

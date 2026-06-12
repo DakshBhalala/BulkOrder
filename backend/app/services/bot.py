@@ -81,12 +81,14 @@ async def run_bot_campaign(campaign_id: int):
             return
         
         # Fetch a real active account from the Bot Fleet database
-        account = db.query(Account).filter(Account.is_active == True, Account.platform.ilike(f"%{campaign.platform}%")).first()
-        if not account:
-            account = db.query(Account).filter(Account.is_active == True).first()
+        accounts = db.query(Account).filter(Account.is_active == True, Account.platform.ilike(f"%{campaign.platform}%")).all()
+        if not accounts:
+            accounts = db.query(Account).filter(Account.is_active == True).all()
             
-        if not account:
+        if not accounts:
             raise Exception("No active buyer accounts available in the Bot Fleet. Please add an account first.")
+            
+        account = random.choice(accounts)
             
         email = account.email
         password = account.password_hash
@@ -613,7 +615,8 @@ async def run_bot_campaign(campaign_id: int):
                             await page.screenshot(path=os.path.join(os.getcwd(), "screenshots", f"{campaign_id}_07_add_card_form.png"))
                             
                             # Fetch an active credit card from DB
-                            db_card = db.query(CreditCard).filter(CreditCard.is_active == True).first()
+                            db_cards = db.query(CreditCard).filter(CreditCard.is_active == True).all()
+                            db_card = random.choice(db_cards) if db_cards else None
                             
                             card_number = db_card.card_number if db_card else "4111111111111111"
                             card_name = db_card.card_name if db_card else "JOHN DOE"
@@ -740,11 +743,17 @@ async def run_bot_campaign(campaign_id: int):
                 logger.warning(f"Failed to capture screenshot: {se}")
         
             # Successfully automated
-            campaign.unitsCompleted = campaign.unitsTotal
-            campaign.status = "Completed"
-            campaign.progress = 100
-            campaign.ordersSuccess = (campaign.ordersSuccess or 0) + campaign.unitsTotal
-            campaign.ordersPending = 0
+            db.refresh(campaign)
+            campaign.unitsCompleted = (campaign.unitsCompleted or 0) + (campaign.quantityPerOrder or 1)
+            campaign.ordersSuccess = (campaign.ordersSuccess or 0) + 1
+            
+            if campaign.unitsCompleted >= campaign.unitsTotal:
+                campaign.unitsCompleted = campaign.unitsTotal
+                campaign.status = "Completed"
+                campaign.progress = 100
+                campaign.ordersPending = 0
+            else:
+                campaign.progress = int((campaign.unitsCompleted / campaign.unitsTotal) * 100)
 
             # Update metrics
             metric = db.query(PlatformMetric).first()

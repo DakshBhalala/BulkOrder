@@ -550,23 +550,31 @@ export default function FleetPage() {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1.5">
                     <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">MM</label>
-                    <input 
-                      type="text" 
+                    <select 
                       value={newCardExpMonth}
-                      onChange={(e) => setNewCardExpMonth(e.target.value.replace(/\D/g, '').slice(0,2))}
-                      className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-xs font-mono font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-center"
-                      placeholder="12"
-                    />
+                      onChange={(e) => setNewCardExpMonth(e.target.value)}
+                      className="w-full h-9 rounded-lg border border-slate-200 bg-white px-2 text-xs font-mono font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-center appearance-none"
+                    >
+                      <option value="" disabled>MM</option>
+                      {Array.from({ length: 12 }, (_, i) => {
+                        const month = String(i + 1).padStart(2, '0');
+                        return <option key={month} value={month}>{month}</option>;
+                      })}
+                    </select>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">YYYY</label>
-                    <input 
-                      type="text" 
+                    <select 
                       value={newCardExpYear}
-                      onChange={(e) => setNewCardExpYear(e.target.value.replace(/\D/g, '').slice(0,4))}
-                      className="w-full h-9 rounded-lg border border-slate-200 bg-white px-3 text-xs font-mono font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-center"
-                      placeholder="2028"
-                    />
+                      onChange={(e) => setNewCardExpYear(e.target.value)}
+                      className="w-full h-9 rounded-lg border border-slate-200 bg-white px-2 text-xs font-mono font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-center appearance-none"
+                    >
+                      <option value="" disabled>YYYY</option>
+                      {Array.from({ length: 15 }, (_, i) => {
+                        const year = String(new Date().getFullYear() + i);
+                        return <option key={year} value={year}>{year}</option>;
+                      })}
+                    </select>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">CVV</label>
